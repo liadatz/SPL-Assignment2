@@ -50,4 +50,8 @@ public class MessageBusImpl implements MessageBus {
 		
 		return null;
 	}
+
+	public boolean isExist(MicroService m) {
+		return true;
+	}
 }
