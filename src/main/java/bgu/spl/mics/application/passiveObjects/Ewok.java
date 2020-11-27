@@ -26,6 +26,9 @@ public class Ewok {
      * release an Ewok
      */
     public void release() {
-    	
+    }
+
+    public boolean getAvailable(){
+        return available;
     }
 }

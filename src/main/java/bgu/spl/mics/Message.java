@@ -9,4 +9,5 @@ package bgu.spl.mics;
  */
 public interface Message {
 
+    public String getMessage();
 }

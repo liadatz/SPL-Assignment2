@@ -1,8 +1,8 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
-import bgu.spl.mics.application.services.HanSoloMicroservice;
+import bgu.spl.mics.application.messages.DummyBroadcast;
+import bgu.spl.mics.application.messages.DummyEvent;
+import bgu.spl.mics.application.services.DummyMicroService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,17 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
     private MessageBus messageBus;
-    private MicroService a;
-    private Event event;
-//    private Broadcast broadcast;
+    private DummyMicroService a;
+    private DummyEvent dummyEvent;
 
 
     @BeforeEach
     void setUp() {
         messageBus = new MessageBusImpl();
-        a = new HanSoloMicroservice();
-        event = new AttackEvent();
-//        broadcast = new Broadcast();
+        a = new DummyMicroService("a");
+        dummyEvent = new DummyEvent("em");
     }
 
     @Test
@@ -30,74 +28,45 @@ class MessageBusImplTest {
     }
 
     @Test
-    void subscribeEvent() {
+    void testEvents() {
         messageBus.register(a);
-        messageBus.subscribeEvent(event.getClass(), a);
-        Future f = messageBus.sendEvent(new DeactivationEvent());
-        assertNull(f);
-        isSent();
-
-    }
-
-    @Test
-    void subscribeBroadcast() {
+        messageBus.subscribeEvent(DummyEvent.class, a);
+        messageBus.sendEvent(dummyEvent);
+        isSent(a, "em");
     }
 
     @Test
     void complete() {
         messageBus.register(a);
-        messageBus.subscribeEvent(event.getClass(), a);
+        messageBus.subscribeEvent(DummyEvent.class, a);
         Future f;
-        f = messageBus.sendEvent(event);
-        messageBus.complete(event, Boolean.TRUE);
+        f = messageBus.sendEvent(dummyEvent);
+        messageBus.complete(dummyEvent, Boolean.TRUE);
         assertTrue(f.isDone());
-        f = messageBus.sendEvent(event);
-        messageBus.complete(event, Boolean.FALSE);
+        f = messageBus.sendEvent(dummyEvent);
+        messageBus.complete(dummyEvent, Boolean.FALSE);
         assertFalse(f.isDone());
     }
 
     @Test
     void sendBroadcast() {
-    }
-
-    @Test
-    void sendEvent() {
         messageBus.register(a);
-        messageBus.subscribeEvent(event.getClass(), a);
-        isSent();
+        DummyBroadcast dummyBroadcast = new DummyBroadcast("bm");
+        messageBus.subscribeBroadcast(DummyBroadcast.class,a);
+        DummyMicroService b = new DummyMicroService("b");
+        messageBus.subscribeBroadcast(DummyBroadcast.class,b);
+        messageBus.sendBroadcast(dummyBroadcast);
+        isSent(a, "a");
+        isSent(b, "b ");
     }
 
-    private void isSent() {
+    private void isSent(MicroService microService, String expectedMessage) {
         Message s = null;
-        messageBus.sendEvent(event);
         try {
-            s = messageBus.awaitMessage(a);
+            s = messageBus.awaitMessage(microService);
+            assertEquals(s.getMessage(),expectedMessage);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        assertNotNull(s);
-    }
-
-    @Test
-    void unregister() {
-    }
-
-    @Test
-    void awaitMessage() {
-        messageBus.register(a);
-        try {
-            messageBus.awaitMessage(a);
-        } catch (InterruptedException e) {
-            assertNotNull(e);
-        }
-        messageBus.subscribeEvent(event.getClass(), a);
-        messageBus.sendEvent(event);
-        Message s = null;
-        try {
-            s = messageBus.awaitMessage(a);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        assertNotNull(s);
     }
 }
