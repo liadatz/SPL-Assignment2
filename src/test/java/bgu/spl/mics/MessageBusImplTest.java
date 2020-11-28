@@ -22,11 +22,11 @@ class MessageBusImplTest {
     }
 
     @Test
-    void testEvents() { //test for methods 'subscribeEvent', 'sendEvent', 'awaitMessage'
+    void testEvents() { //test for methods 'subscribeEvent', 'sendEvent', 'awaitMessage', 'register'
         messageBus.register(a);
         messageBus.subscribeEvent(DummyEvent.class, a);
         messageBus.sendEvent(dummyEvent);
-        isSent(a, "em"); //use of self- aid test method
+        isSent(a, dummyEvent); //use of self- aid test method
     }
 
     @Test
@@ -55,15 +55,15 @@ class MessageBusImplTest {
         DummyBroadcast dummyBroadcast = new DummyBroadcast("bm");
         messageBus.sendBroadcast(dummyBroadcast);
         //tests if the broadcast message was received properly
-        isSent(a, "a");
-        isSent(b, "b ");
+        isSent(a, dummyBroadcast);
+        isSent(b, dummyBroadcast);
     }
 
-    private void isSent(MicroService microService, String expectedMessage) { //test if a message was received properly after been sent
+    private void isSent(MicroService microService, Message expectedMessage) { //test if a message was received properly after been sent
         Message s = null;
         try {
             s = messageBus.awaitMessage(microService);
-            assertEquals(s.getMessage(),expectedMessage);
+            assertEquals(expectedMessage,s);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -51,6 +51,4 @@ public class MessageBusImpl implements MessageBus {
 
 		return null;
 	}
-
-
 }

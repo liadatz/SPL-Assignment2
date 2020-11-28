@@ -7,8 +7,4 @@ public class DummyEvent implements Event<Boolean>{
     public DummyEvent(String message) {
         this.message = message;
     }
-
-    public String getMessage(){
-        return message;
-    }
 }

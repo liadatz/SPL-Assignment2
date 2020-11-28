@@ -30,22 +30,20 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		
-        return null; 
+		return null;
 	}
 	
 	/**
      * Resolves the result of this Future object.
      */
 	public void resolve (T result) {
-		
 	}
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		return null;
+		return true;
 	}
 	
 	/**
@@ -60,7 +58,6 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-		
         return null;
 	}
 
