@@ -94,6 +94,5 @@ public interface MessageBus {
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
 
-    public boolean isExist(MicroService m);
-    
+
 }

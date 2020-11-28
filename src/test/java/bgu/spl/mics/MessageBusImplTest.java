@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
-    private MessageBus messageBus;
+    private MessageBusImpl messageBus;
     private DummyMicroService a;
     private DummyEvent dummyEvent;
 
@@ -19,12 +19,6 @@ class MessageBusImplTest {
         messageBus = new MessageBusImpl();
         a = new DummyMicroService("a");
         dummyEvent = new DummyEvent("em");
-    }
-
-    @Test
-    void register() {
-        messageBus.register(a);
-        assertTrue(messageBus.isExist(a)); //'isExist' is implemented in 'MessageBusImpl' class and return true if the right queue was created in the message bus for microservice a
     }
 
     @Test
