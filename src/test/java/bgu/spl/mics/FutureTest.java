@@ -32,7 +32,7 @@ public class FutureTest {
 
     @Test
     public void testResolve(){
-        String str = "someResult";
+        String str = "result";
         future.resolve(str);
         assertTrue(future.isDone());
         assertEquals(str, future.get());
@@ -40,7 +40,7 @@ public class FutureTest {
 
     @Test
     public void testIsDone(){
-        String str = "someResult";
+        String str = "result";
         assertFalse(future.isDone());
         future.resolve(str);
         assertTrue(future.isDone());
@@ -50,8 +50,8 @@ public class FutureTest {
     public void testGetWithTimeOut() throws InterruptedException
     {
         assertFalse(future.isDone());
-        assertNull(future.get(100,TimeUnit.MILLISECONDS));
+        assertNull(future.get(100,TimeUnit.MILLISECONDS)); //result should be null if not done
         future.resolve("expectedAnswer");
-        assertEquals(future.get(100,TimeUnit.MILLISECONDS),"expectedAnswer");
+        assertEquals(future.get(100,TimeUnit.MILLISECONDS),"expectedAnswer"); // after resolved, result should be "expectedAnswer"
     }
 }

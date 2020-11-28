@@ -24,25 +24,26 @@ class MessageBusImplTest {
     @Test
     void register() {
         messageBus.register(a);
-        assertTrue(messageBus.isExist(a));
+        assertTrue(messageBus.isExist(a)); //'isExist' is implemented in 'MessageBusImpl' class and return true if the right queue was created in the message bus for microservice a
     }
 
     @Test
-    void testEvents() {
+    void testEvents() { //test for methods 'subscribeEvent', 'sendEvent', 'awaitMessage'
         messageBus.register(a);
         messageBus.subscribeEvent(DummyEvent.class, a);
         messageBus.sendEvent(dummyEvent);
-        isSent(a, "em");
+        isSent(a, "em"); //use of self- aid test method
     }
 
     @Test
     void complete() {
         messageBus.register(a);
+        //first testing completed event
         messageBus.subscribeEvent(DummyEvent.class, a);
-        Future f;
-        f = messageBus.sendEvent(dummyEvent);
+        Future f= messageBus.sendEvent(dummyEvent);
         messageBus.complete(dummyEvent, Boolean.TRUE);
         assertTrue(f.isDone());
+        //then testing non- completed event
         f = messageBus.sendEvent(dummyEvent);
         messageBus.complete(dummyEvent, Boolean.FALSE);
         assertFalse(f.isDone());
@@ -50,17 +51,21 @@ class MessageBusImplTest {
 
     @Test
     void sendBroadcast() {
-        messageBus.register(a);
-        DummyBroadcast dummyBroadcast = new DummyBroadcast("bm");
-        messageBus.subscribeBroadcast(DummyBroadcast.class,a);
+        //create and register 2 Microservices
         DummyMicroService b = new DummyMicroService("b");
+        messageBus.register(a);
+        messageBus.register(b);
+        //subscribe a and b to receive 'DummyBroadcast' messages
+        messageBus.subscribeBroadcast(DummyBroadcast.class,a);
         messageBus.subscribeBroadcast(DummyBroadcast.class,b);
+        DummyBroadcast dummyBroadcast = new DummyBroadcast("bm");
         messageBus.sendBroadcast(dummyBroadcast);
+        //tests if the broadcast message was received properly
         isSent(a, "a");
         isSent(b, "b ");
     }
 
-    private void isSent(MicroService microService, String expectedMessage) {
+    private void isSent(MicroService microService, String expectedMessage) { //test if a message was received properly after been sent
         Message s = null;
         try {
             s = messageBus.awaitMessage(microService);
@@ -71,4 +76,3 @@ class MessageBusImplTest {
     }
 }
 
-//test2
