@@ -17,14 +17,30 @@ import bgu.spl.mics.application.passiveObjects.Attack;
  */
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
+	private Integer numOfSubscribers;
 	
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
     }
 
+    public LeiaMicroservice(Attack[] attacks, Integer numOfSubscribers) {
+        super("Leia");
+        this.attacks = attacks;
+        this.numOfSubscribers = numOfSubscribers;
+    }
+
     @Override
     protected void initialize() {
-    	
+
+        synchronized (this) {
+            while(numOfSubscribers == 0) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

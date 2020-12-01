@@ -1,11 +1,14 @@
 package bgu.spl.mics;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
+	private ConcurrentHashMap<Event,MicroService> eventSenders;
 
 
 	@Override
@@ -50,5 +53,9 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 
 		return null;
+	}
+
+	private boolean isRegister(MicroService m) {
+		return true;
 	}
 }

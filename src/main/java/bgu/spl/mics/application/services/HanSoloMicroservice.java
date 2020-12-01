@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 
+import bgu.spl.mics.Message;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 
@@ -13,9 +14,15 @@ import bgu.spl.mics.application.messages.AttackEvent;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class HanSoloMicroservice extends MicroService {
+    private Integer numOfSubscribers;
 
     public HanSoloMicroservice() {
         super("Han");
+    }
+
+    public HanSoloMicroservice(Integer numOfSubscribers){
+        super("Han");
+        this.numOfSubscribers = numOfSubscribers;
     }
 
 
