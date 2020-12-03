@@ -25,7 +25,7 @@ public abstract class MicroService implements Runnable {
     private boolean terminated = false;
     private MessageBusImpl messageBus;
     private ConcurrentHashMap<Class,Callback> callBacks;
-    private ConcurrentHashMap<Event,Future> eventsFuture;
+    private ConcurrentHashMap<Event,Future> eventsFutures;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -33,9 +33,9 @@ public abstract class MicroService implements Runnable {
      */
     public MicroService(String name) {
         this.name = name;
-        messageBus = new MessageBusImpl();
+        messageBus = MessageBusImpl.getInstance();
         callBacks = new ConcurrentHashMap<>();
-        eventsFuture = new ConcurrentHashMap<>();
+        eventsFutures = new ConcurrentHashMap<>();
     }
 
     /**
@@ -107,8 +107,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
         return messageBus.sendEvent(e);
-//        if (future != null) eventsFuture.put(e, future);
-//        return future;
     }
 
     /**
