@@ -11,11 +11,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
-	private ConcurrentHashMap<MicroService, LinkedBlockingQueue<Message>> queuesMap;
-	private ConcurrentHashMap<Class<? extends Event<?>>, LinkedBlockingQueue<LinkedBlockingQueue<Message>>> eventSubscribers;
-	private ConcurrentHashMap<Class<? extends Broadcast>, LinkedBlockingQueue<LinkedBlockingQueue<Message>>> broadcastSubscribers;
-	private ConcurrentHashMap<Event<?>, Future<Object>> eventFutures; //is <Object> ok? (fixes line 61)
+	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> queuesMap;
+	private final ConcurrentHashMap<Class<? extends Event<?>>, BlockingQueue<BlockingQueue<Message>>> eventSubscribers;
+	private final ConcurrentHashMap<Class<? extends Broadcast>, BlockingQueue<BlockingQueue<Message>>> broadcastSubscribers;
+	private ConcurrentHashMap<Event, Future> eventFutures;
 	private static MessageBusImpl instance = null;
+	private final Object lock = new Object();
 
 	private MessageBusImpl() {
 		queuesMap = new ConcurrentHashMap<>();
@@ -33,24 +34,22 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m){
-		synchronized (eventSubscribers) { //??
-			if (!eventSubscribers.containsKey(type)) {
-				eventSubscribers.put(type, new LinkedBlockingQueue<>());
+			synchronized (eventSubscribers) {
+				if (!eventSubscribers.containsKey(type)) {
+					eventSubscribers.put(type, new LinkedBlockingQueue<>());
+				}
 			}
-			try {eventSubscribers.get(type).put(queuesMap.get(m));}
-			catch (InterruptedException e){}
-		}
+			eventSubscribers.get(type).offer(queuesMap.get(m));
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		synchronized (broadcastSubscribers) { //??
+		synchronized (broadcastSubscribers) {
 			if (!broadcastSubscribers.containsKey(type)) {
 				broadcastSubscribers.put(type, new LinkedBlockingQueue<>());
 			}
-			try {broadcastSubscribers.get(type).put(queuesMap.get(m));}
-			catch (InterruptedException e){}
 		}
+		broadcastSubscribers.get(type).offer(queuesMap.get(m));
 
 	}
 
@@ -64,48 +63,67 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		if (broadcastSubscribers.containsKey(b.getClass())){
-			LinkedBlockingQueue<LinkedBlockingQueue<Message>> polled = broadcastSubscribers.get(b.getClass());
-			Iterator<LinkedBlockingQueue<Message>> iter = polled.iterator();
-			while(iter.hasNext()){
-				try{iter.next().put(b);}
-				catch(InterruptedException e){}
+		synchronized (broadcastSubscribers) {
+			if (broadcastSubscribers.containsKey(b.getClass()) && !(broadcastSubscribers.get(b.getClass()).isEmpty())) {
+				BlockingQueue<BlockingQueue<Message>> polled = broadcastSubscribers.get(b.getClass());
+				Iterator<BlockingQueue<Message>> iter = polled.iterator();
+				while (iter.hasNext()) {
+					BlockingQueue<Message> next = iter.next();
+					synchronized (lock) {
+						if (next != null)
+							next.offer(b);
+					}
+				}
 			}
 		}
 	}
 
-
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-
-		if (eventSubscribers.containsKey(e.getClass())) {
-			LinkedBlockingQueue<Message> polled = eventSubscribers.get(e.getClass()).poll();
-			if(polled != null){
-				try {polled.put(e);}
-				catch (InterruptedException ex) {}
-				try {eventSubscribers.get(e.getClass()).put(polled);}
-				catch (InterruptedException ex) {}
-				Future<T> future = new Future<T>();
-				eventFutures.put(e, future);
-				return future;
+		synchronized (eventSubscribers) {
+			if (eventSubscribers.containsKey(e.getClass())) {
+				BlockingQueue<Message> polled = null;
+				while (polled == null && eventSubscribers.get(e.getClass()).isEmpty())
+					polled = eventSubscribers.get(e.getClass()).poll();
+				synchronized (lock) {
+					if (polled != null) {
+						polled.offer(e);
+						eventSubscribers.get(e.getClass()).offer(polled);
+						Future<T> future = new Future<T>();
+						eventFutures.put(e, future);
+						return future;
+					}
 				}
 			}
+		}
 		return null;
 	}
 
 	@Override
 	public void register(MicroService m) {
-		queuesMap.put(m, new LinkedBlockingQueue<Message>());
+		if (!isRegistered(m))
+			queuesMap.put(m, new LinkedBlockingQueue<Message>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-
+		synchronized (lock) {
+			if (m != null) {
+				queuesMap.remove(m); //makes all m's message queues in eventSubscribers and broadcastSubscribers null
+			}
+		}
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 
+		if (m != null && queuesMap.containsKey(m)){
+			return queuesMap.get(m).take(); //take is blocking method
+		}
 		return null;
+	}
+
+	private boolean isRegistered(MicroService m){
+		return queuesMap.containsKey(m);
 	}
 }

@@ -16,7 +16,7 @@ class MessageBusImplTest {
 
     @BeforeEach
     void setUp() {
-        messageBus = new MessageBusImpl();
+        messageBus = MessageBusImpl.getInstance();
         a = new DummyMicroService("a");
         dummyEvent = new DummyEvent("em");
     }
