@@ -18,9 +18,10 @@ public class Future<T> {
 	 * This should be the the only public constructor in this class.
 	 */
 	public Future() {
-		
+	    isDone = false;
+	    result = null;
 	}
-	
+
 	/**
      * retrieves the result the Future object holds if it has been resolved.
      * This is a blocking method! It waits for the computation in case it has
@@ -30,20 +31,30 @@ public class Future<T> {
      * 	       
      */
 	public T get() {
-		return null;
+		while (!isDone()){
+			try{wait();}
+			catch(InterruptedException e){
+			}
+		}
+	    return result;
 	}
 	
 	/**
      * Resolves the result of this Future object.
      */
 	public void resolve (T result) {
+        //trying to resolve already resolved future?
+        //if (this.isDone()){};
+        this.result = result;
+	    isDone = true;
+	    notifyAll();
 	}
 	
 	/**
      * @return true if this object has been resolved, false otherwise
      */
 	public boolean isDone() {
-		return true;
+		return isDone;
 	}
 	
 	/**
@@ -58,7 +69,12 @@ public class Future<T> {
      *         elapsed, return null.
      */
 	public T get(long timeout, TimeUnit unit) {
-        return null;
+		while (!isDone()){
+			try{ unit.sleep(timeout);}
+			catch(InterruptedException e){
+			}
+		}
+		return result;
 	}
 
 }
