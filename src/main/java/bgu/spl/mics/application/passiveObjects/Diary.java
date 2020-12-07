@@ -10,6 +10,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
+    private static class SingletonHolder {
+        private static Diary instance = new Diary();
+    }
+
+
+
+
     //--------------------------fields--------------------------------------
     private AtomicInteger numOfAttackers;
     //--------------------------getters--------------------------------------
@@ -19,5 +26,9 @@ public class Diary {
     //--------------------------method--------------------------------------
     public void increaseNumOfAttackers(){
         numOfAttackers.incrementAndGet();
+    }
+
+    public static Diary getInstance() {
+        return SingletonHolder.instance;
     }
 }
