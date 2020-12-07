@@ -18,17 +18,19 @@ public class Ewok {
     /**
      * Acquires an Ewok
      */
-    public void acquire() {
-		
+    public synchronized void acquire() {
+		if (available)
+		    available = false;
     }
 
     /**
      * release an Ewok
      */
-    public void release() {
+    public synchronized void release() {
+        available = true;
     }
 
-    public boolean getAvailable(){
+    public synchronized boolean getAvailable(){
         return available;
     }
 }

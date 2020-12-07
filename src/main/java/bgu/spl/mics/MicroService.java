@@ -25,7 +25,6 @@ public abstract class MicroService implements Runnable {
     private boolean terminated = false;
     private MessageBusImpl messageBus;
     private ConcurrentHashMap<Class,Callback> callBacks;
-    private ConcurrentHashMap<Event,Future> eventsFutures;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -35,7 +34,6 @@ public abstract class MicroService implements Runnable {
         this.name = name;
         messageBus = MessageBusImpl.getInstance();
         callBacks = new ConcurrentHashMap<>();
-        eventsFutures = new ConcurrentHashMap<>();
     }
 
     /**
