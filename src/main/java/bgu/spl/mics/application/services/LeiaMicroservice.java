@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.services;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
@@ -29,15 +27,16 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
-            while(!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        subscribeBroadcast(TerminateBroadcast.class, callback -> terminate());
+        while (!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        for (Attack attack: attacks) {
+        }
+        // Attack phase
+        for (Attack attack : attacks) {
             AttackEvent newAttack = new AttackEvent(attack.getSerials(), attack.getDuration());
             sendEvent(newAttack); //we don't keep futures
         }

@@ -14,20 +14,21 @@ import java.util.List;
  */
 public class Ewoks {
     private Ewok[] ewoks;
+
     private static class SingletonHolder {
         private static Ewoks instance = null;
-        private SingletonHolder(int numOfEwoks){
+
+        private SingletonHolder(int numOfEwoks) {
             instance = new Ewoks(numOfEwoks);
         }
     }
 
     private Ewoks(int numOfEwoks) {
         ewoks = new Ewok[numOfEwoks];
-        for (int i=0; i<numOfEwoks; i++){
-            ewoks[i] = new Ewok(i+1);
+        for (int i = 0; i < numOfEwoks; i++) {
+            ewoks[i] = new Ewok(i + 1);
         }
     }
-
 
     public static Ewoks getInstance(int numOfEwoks) {
         SingletonHolder sh = new SingletonHolder(numOfEwoks);
@@ -38,14 +39,27 @@ public class Ewoks {
         return SingletonHolder.instance;
     }
 
-    public void acquireEwoks(List<Integer> serials){
-
+    public void acquireEwoks(List<Integer> serials) { // check for other ways to prevent starvation
+        for (Integer serial : serials) {
+            synchronized (ewoks[serial - 1]) {
+                while (!ewoks[serial - 1].getAvailable()) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                ewoks[serial - 1].acquire();
+            }
+        }
     }
 
-    public void releaseEwoks(List<Integer> serials){
-        Iterator<Integer> iter = serials.iterator();
-        while(iter.hasNext()){
-            ewoks[iter.next()-1].release();
+    public void releaseEwoks(List<Integer> serials) {
+        for (Integer serial : serials) {
+            synchronized (ewoks[serial - 1]) {
+                ewoks[serial - 1].release();
+            }
+            notifyAll(); // should it be inside the loop instead?
         }
     }
 }

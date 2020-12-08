@@ -16,9 +16,9 @@ public class Diary {
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
+
     private AtomicInteger numOfAttackers;
     private AtomicInteger totalAttacks;
-    //is okay to initialize here instead of in constructor?
     private long HanSoloFinish = 0;
     private long C3POFinish = 0;
     private long R2D2Deactivate = 0;
@@ -29,7 +29,7 @@ public class Diary {
     private long LandoTerminate = 0;
 
     //------------------------constructor------------------------------------
-    private Diary(){
+    private Diary() {
         numOfAttackers = new AtomicInteger(0);
         totalAttacks = new AtomicInteger(0);
     }
@@ -38,34 +38,49 @@ public class Diary {
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
-    public AtomicInteger getNumOfAttackers(){
+
+    public AtomicInteger getNumOfAttackers() {
         return numOfAttackers;
     }
+
     //--------------------------setter--------------------------------------
-    public void increaseNumOfAttackers(){
+    public void increaseNumOfAttackers() {
         numOfAttackers.incrementAndGet();
-    }//is considered setter?
-    public void increaseTotalAttacks(){
-        totalAttacks.incrementAndGet();
-    }//is considered setter?
-    public void setTerminateTime(MicroService m, long time){
-        String name = m.getName();
-        switch(name){
-            case "HanSolo": HanSoloTerminate = time;
-            case "C3PO": C3P0Terminate = time;
-            case "Leia": LeiaTerminate = time;
-            case "R2D2": R2D2Terminate = time;
-            case "Lando": LandoTerminate = time;
-        }
     }
-    public void setFinishTime(MicroService m, long time){
+
+    public void increaseTotalAttacks() {
+        totalAttacks.incrementAndGet();
+    }
+
+    public void setTerminateTime(MicroService m, long time) {
         String name = m.getName();
-        switch(name){
-            case "HanSolo": HanSoloFinish = time;
-            case "C3PO": C3POFinish = time;
+        switch (name) {
+            case "HanSolo":
+                HanSoloTerminate = time;
+            case "C3PO":
+                C3P0Terminate = time;
+            case "Leia":
+                LeiaTerminate = time;
+            case "R2D2":
+                R2D2Terminate = time;
+            case "Lando":
+                LandoTerminate = time;
         }
     }
 
+    public void setFinishTime(MicroService m, long time) {
+        String name = m.getName();
+        switch (name) {
+            case "HanSolo":
+                HanSoloFinish = time;
+            case "C3PO":
+                C3POFinish = time;
+        }
+    }
+
+    public void setDeactivateTime(long time) {
+        R2D2Deactivate = time;
+    }
 
 
 }

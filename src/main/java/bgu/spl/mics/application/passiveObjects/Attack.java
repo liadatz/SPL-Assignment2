@@ -21,11 +21,11 @@ public class Attack {
         this.duration = duration;
     }
 
-    public List<Integer> getSerials(){
+    public List<Integer> getSerials() {
         return serials;
     }
 
-    public int getDuration(){
+    public int getDuration() {
         return duration;
     }
 }

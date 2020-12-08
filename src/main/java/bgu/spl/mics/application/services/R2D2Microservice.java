@@ -5,6 +5,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -18,10 +19,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  */
 public class R2D2Microservice extends MicroService {
     private long duration;
+    private Diary diary;
 
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration = duration;
+        diary = Diary.getInstance();
 
     }
 
@@ -34,8 +37,9 @@ public class R2D2Microservice extends MicroService {
             catch (InterruptedException eX){
                 eX.printStackTrace();
             }
+            diary.setDeactivateTime(System.currentTimeMillis()); // update log in diary
             BombDestroyerEvent bombEvent = new BombDestroyerEvent();
-            sendEvent(bombEvent); //notify lando the shield activation is done
+            sendEvent(bombEvent); // notify Lando that shield deactivation is done
         };
         subscribeEvent(DeactivationEvent.class, DeCallback);
         subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
