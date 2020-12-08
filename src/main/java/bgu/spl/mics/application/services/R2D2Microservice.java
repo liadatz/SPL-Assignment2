@@ -1,7 +1,12 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
@@ -12,13 +17,27 @@ import bgu.spl.mics.application.messages.DeactivationEvent;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
+    private long duration;
 
     public R2D2Microservice(long duration) {
         super("R2D2");
+        this.duration = duration;
+
     }
 
     @Override
     protected void initialize() {
-
+        Callback <DeactivationEvent> DeCallback = (DeactivationEvent e)->{
+            try {
+                MILLISECONDS.sleep(duration);
+            }
+            catch (InterruptedException eX){
+                eX.printStackTrace();
+            }
+            BombDestroyerEvent bombEvent = new BombDestroyerEvent();
+            sendEvent(bombEvent); //notify lando the shield activation is done
+        };
+        subscribeEvent(DeactivationEvent.class, DeCallback);
+        subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
     }
 }

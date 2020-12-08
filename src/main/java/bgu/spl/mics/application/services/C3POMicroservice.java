@@ -3,7 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.terminateBroadcast;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
@@ -38,9 +38,10 @@ public class C3POMicroservice extends MicroService {
             }
             ewoks.releaseEwoks(e.getEwoksSerials());
             complete(e, true);
+            diary.increaseTotalAttacks();
         };
         subscribeEvent(AttackEvent.class, attackCallback);
         diary.increaseNumOfAttackers();
-        subscribeBroadcast(terminateBroadcast.class, callback->terminate());
+        subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
     }
 }
