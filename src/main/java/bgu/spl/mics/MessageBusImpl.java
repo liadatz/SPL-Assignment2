@@ -83,7 +83,7 @@ public class MessageBusImpl implements MessageBus {
 		synchronized (eventSubscribers) {
 			if (eventSubscribers.containsKey(e.getClass())) {
 				BlockingQueue<Message> polled = null;
-				while (polled == null && eventSubscribers.get(e.getClass()).isEmpty())
+				while (polled == null && !eventSubscribers.get(e.getClass()).isEmpty())
 					polled = eventSubscribers.get(e.getClass()).poll();
 				synchronized (lock) {
 					if (polled != null) {

@@ -43,9 +43,10 @@ public class Future<T> {
     /**
      * Resolves the result of this Future object.
      */
-    public void resolve(T result) {
+    public synchronized void resolve(T result) {
         //trying to resolve already resolved future?
         //if (this.isDone()){};
+
         this.result = result;
         isDone = true;
         notifyAll();

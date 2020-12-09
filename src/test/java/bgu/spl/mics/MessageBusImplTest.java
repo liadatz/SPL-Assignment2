@@ -40,7 +40,7 @@ class MessageBusImplTest {
         //then testing non- completed event
         f = messageBus.sendEvent(dummyEvent);
         messageBus.complete(dummyEvent, Boolean.FALSE);
-        assertFalse(f.isDone());
+        assertFalse((Boolean) f.get());
     }
 
     @Test

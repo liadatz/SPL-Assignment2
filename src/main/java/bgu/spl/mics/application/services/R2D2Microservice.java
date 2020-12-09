@@ -6,8 +6,6 @@ import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
-import sun.font.TrueTypeFont;
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
@@ -44,6 +42,8 @@ public class R2D2Microservice extends MicroService {
             sendEvent(bombEvent); // notify Lando that shield deactivation is done
         };
         subscribeEvent(DeactivationEvent.class, DeCallback);
-        subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
-    }
+        subscribeBroadcast(TerminateBroadcast.class, callback->{
+            terminate();
+            diary.setTerminateTime(this, System.currentTimeMillis());
+        });    }
 }

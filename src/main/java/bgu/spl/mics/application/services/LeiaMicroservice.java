@@ -37,7 +37,6 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        subscribeBroadcast(TerminateBroadcast.class, callback -> terminate());
         while (!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
             try {
                 wait();
@@ -58,6 +57,10 @@ public class LeiaMicroservice extends MicroService {
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         deactivationFutrue = sendEvent(deactivationEvent);
         deactivationFutrue.get(); //block and wait until deactivation future is resolved
+        subscribeBroadcast(TerminateBroadcast.class, callback->{
+            terminate();
+            diary.setTerminateTime(this, System.currentTimeMillis());
+        });
     }
 
 }

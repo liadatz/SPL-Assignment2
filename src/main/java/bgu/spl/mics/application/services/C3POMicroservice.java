@@ -42,6 +42,8 @@ public class C3POMicroservice extends MicroService {
         };
         subscribeEvent(AttackEvent.class, attackCallback);
         diary.increaseNumOfAttackers();
-        subscribeBroadcast(TerminateBroadcast.class, callback->terminate());
-    }
+        subscribeBroadcast(TerminateBroadcast.class, callback->{
+            terminate();
+            diary.setTerminateTime(this, System.currentTimeMillis());
+        });    }
 }

@@ -5,6 +5,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -15,10 +16,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  */
 public class LandoMicroservice  extends MicroService {
     private long duration;
+    Diary diary;
 
     public LandoMicroservice(long duration) {
         super("Lando");
         this.duration = duration;
+        diary = Diary.getInstance();
     }
 
     @Override
@@ -31,9 +34,11 @@ public class LandoMicroservice  extends MicroService {
                 eX.printStackTrace();
             }
             TerminateBroadcast terminate = new TerminateBroadcast();
-            subscribeBroadcast(TerminateBroadcast.class, callback->terminate()); //should get the terminateBroadcast? or just terminate alone?
+            subscribeBroadcast(TerminateBroadcast.class, callback->{
+                terminate();
+                diary.setTerminateTime(this, System.currentTimeMillis());
+            });
             sendBroadcast(terminate); //notify all microservices that the attack was done
-            //terminate(); // replaces line 34?
         };
        
     }
