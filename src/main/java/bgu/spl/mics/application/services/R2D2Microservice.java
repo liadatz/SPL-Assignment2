@@ -1,8 +1,6 @@
 package bgu.spl.mics.application.services;
-
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
@@ -17,17 +15,17 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
-    //------------------------------------fields----------------------------------------------
+//------------------------------------fields----------------------------------------------
     private long duration;
     private Diary diary;
-    //----------------------------------constructors------------------------------------------
+//----------------------------------constructors------------------------------------------
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration = duration;
         diary = Diary.getInstance();
 
     }
-    //------------------------------------methods---------------------------------------------
+//------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // DeactivationEvent
@@ -39,8 +37,6 @@ public class R2D2Microservice extends MicroService {
             }
             complete(e, Boolean.TRUE);
             diary.setDeactivateTime(System.currentTimeMillis()); // update log in diary
-            BombDestroyerEvent bombEvent = new BombDestroyerEvent();
-            sendEvent(bombEvent); // notify Lando that shield deactivation is done
         };
         subscribeEvent(DeactivationEvent.class, DeCallback);
 

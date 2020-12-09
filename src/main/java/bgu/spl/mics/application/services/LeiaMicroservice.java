@@ -1,16 +1,10 @@
 package bgu.spl.mics.application.services;
-
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
-import bgu.spl.mics.application.messages.FinishAttacksBroadcast;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
@@ -23,12 +17,12 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class LeiaMicroservice extends MicroService {
-    //------------------------------------fields----------------------------------------------
+//------------------------------------fields----------------------------------------------
     private Attack[] attacks;
 	private Diary diary;
 	private ConcurrentHashMap<Event, Future> futuresTable;
 	private Future deactivationFutrue;
-    //----------------------------------constructors------------------------------------------
+//----------------------------------constructors------------------------------------------
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
@@ -36,7 +30,7 @@ public class LeiaMicroservice extends MicroService {
 		futuresTable = new ConcurrentHashMap<>();
 		deactivationFutrue = new Future();
     }
-    //------------------------------------methods---------------------------------------------
+//------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // Wait until attackers are ready
@@ -65,7 +59,9 @@ public class LeiaMicroservice extends MicroService {
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         deactivationFutrue = sendEvent(deactivationEvent);
         deactivationFutrue.get(); //block and wait until deactivation future is resolved
-
+        BombDestroyerEvent bombEvent = new BombDestroyerEvent();
+        sendEvent(bombEvent); // notify Lando that shield deactivation is done
+        //is needed to get answer from lando?
         // TerminateBroadcast
         subscribeBroadcast(TerminateBroadcast.class, callback->{
             terminate();

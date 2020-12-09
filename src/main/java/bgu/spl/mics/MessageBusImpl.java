@@ -1,5 +1,4 @@
 package bgu.spl.mics;
-
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,27 +10,28 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
+//------------------------------------fields----------------------------------------------
+
 	private static class SingletonHolder {
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
-
 	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> queuesMap;
 	private final ConcurrentHashMap<Class<? extends Event<?>>, BlockingQueue<BlockingQueue<Message>>> eventSubscribers;
 	private final ConcurrentHashMap<Class<? extends Broadcast>, BlockingQueue<BlockingQueue<Message>>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> eventFutures;
 	private final Object lock = new Object();
-
+//--------------------------------constructors--------------------------------------------
 	private MessageBusImpl() {
 		queuesMap = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
 		broadcastSubscribers = new ConcurrentHashMap<>();
 		eventFutures = new ConcurrentHashMap<>();
 	}
-
+//----------------------------------getters-----------------------------------------------
 	public static MessageBusImpl getInstance(){
 		return SingletonHolder.instance;
 	}
-
+//-----------------------------------methods----------------------------------------------
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m){
 			synchronized (eventSubscribers) {

@@ -1,8 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
-
-
 import bgu.spl.mics.MicroService;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

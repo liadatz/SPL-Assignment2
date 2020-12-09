@@ -1,12 +1,9 @@
 package bgu.spl.mics.application.services;
-
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
@@ -15,16 +12,16 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class LandoMicroservice  extends MicroService {
-    //------------------------------------fields----------------------------------------------
+//------------------------------------fields----------------------------------------------
     private long duration;
     Diary diary;
-    //----------------------------------constructors------------------------------------------
+//----------------------------------constructors------------------------------------------
     public LandoMicroservice(long duration) {
         super("Lando");
         this.duration = duration;
         diary = Diary.getInstance();
     }
-    //------------------------------------methods---------------------------------------------
+//------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // TerminateBroadcast

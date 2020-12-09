@@ -1,7 +1,4 @@
 package bgu.spl.mics;
-
-import bgu.spl.mics.application.passiveObjects.Diary;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,11 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  */
 public abstract class MicroService implements Runnable {
+//------------------------------------fields----------------------------------------------
     private String name;
     private boolean terminated = false;
     private MessageBusImpl messageBus;
     private ConcurrentHashMap<Class, Callback> callBacks;
-
+    Integer i;
+//----------------------------------constructors------------------------------------------
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
@@ -37,7 +36,17 @@ public abstract class MicroService implements Runnable {
         messageBus = MessageBusImpl.getInstance();
         callBacks = new ConcurrentHashMap<>();
     }
+//------------------------------------getters----------------------------------------------
 
+    /**
+     * @return the name of the service - the service name is given to it in the
+     * construction time and is used mainly for debugging purposes.
+     */
+    public final String getName() {
+        return name;
+    }
+
+//------------------------------------methods---------------------------------------------
     /**
      * Subscribes to events of type {@code type} with the callback
      * {@code callback}. This means two things:
@@ -149,14 +158,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
         terminated = true;
-    }
-
-    /**
-     * @return the name of the service - the service name is given to it in the
-     * construction time and is used mainly for debugging purposes.
-     */
-    public final String getName() {
-        return name;
     }
 
     /**
