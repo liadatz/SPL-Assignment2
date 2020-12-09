@@ -12,11 +12,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
-    //--------------------------fields--------------------------------------
+//--------------------------fields--------------------------------------
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
-
     private AtomicInteger numOfAttackers;
     private AtomicInteger totalAttacks;
     private long HanSoloFinish = 0;
@@ -27,31 +26,25 @@ public class Diary {
     private long LeiaTerminate = 0;
     private long R2D2Terminate = 0;
     private long LandoTerminate = 0;
-
-    //------------------------constructor------------------------------------
+//------------------------constructor------------------------------------
     private Diary() {
         numOfAttackers = new AtomicInteger(0);
         totalAttacks = new AtomicInteger(0);
     }
-
-    //--------------------------getters--------------------------------------
+//--------------------------getters--------------------------------------
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
-
     public AtomicInteger getNumOfAttackers() {
         return numOfAttackers;
     }
-
-    //--------------------------setter--------------------------------------
+//--------------------------setter--------------------------------------
     public void increaseNumOfAttackers() {
         numOfAttackers.incrementAndGet();
     }
-
     public void increaseTotalAttacks() {
         totalAttacks.incrementAndGet();
     }
-
     public void setTerminateTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
@@ -67,7 +60,6 @@ public class Diary {
                 LandoTerminate = time;
         }
     }
-
     public void setFinishTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
@@ -77,10 +69,7 @@ public class Diary {
                 C3POFinish = time;
         }
     }
-
     public void setDeactivateTime(long time) {
         R2D2Deactivate = time;
     }
-
-
 }

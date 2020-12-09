@@ -10,9 +10,10 @@ import java.util.List;
  * YDo not add any additional members/method to this class (except for getters).
  */
 public class Attack {
+//------------------------------------fields----------------------------------------------
     final List<Integer> serials;
     final int duration;
-
+//----------------------------------constructors------------------------------------------
     /**
      * Constructor.
      */
@@ -20,12 +21,16 @@ public class Attack {
         this.serials = serialNumbers;
         this.duration = duration;
     }
-
+//------------------------------------getters---------------------------------------------
     public List<Integer> getSerials() {
         return serials;
     }
-
     public int getDuration() {
         return duration;
     }
+
+
+
+
+
 }

@@ -23,11 +23,12 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class LeiaMicroservice extends MicroService {
-	private Attack[] attacks;
+    //------------------------------------fields----------------------------------------------
+    private Attack[] attacks;
 	private Diary diary;
 	private ConcurrentHashMap<Event, Future> futuresTable;
 	private Future deactivationFutrue;
-
+    //----------------------------------constructors------------------------------------------
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
@@ -35,7 +36,7 @@ public class LeiaMicroservice extends MicroService {
 		futuresTable = new ConcurrentHashMap<>();
 		deactivationFutrue = new Future();
     }
-
+    //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // Wait until attackers are ready

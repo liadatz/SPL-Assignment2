@@ -109,7 +109,7 @@ public class MessageBusImpl implements MessageBus {
 	public void unregister(MicroService m) {
 		synchronized (lock) {
 			if (m != null) {
-				queuesMap.remove(m); //makes all m's message queues in eventSubscribers and broadcastSubscribers null
+				queuesMap.remove(m);//makes all m's message queues in eventSubscribers and broadcastSubscribers null
 			}
 		}
 	}

@@ -21,16 +21,16 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class HanSoloMicroservice extends MicroService {
+    //------------------------------------fields----------------------------------------------
     private Diary diary;
     private Ewoks ewoks;
-
+    //----------------------------------constructors------------------------------------------
     public HanSoloMicroservice() {
         super("Han");
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
     }
-
-
+    //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // Attacks

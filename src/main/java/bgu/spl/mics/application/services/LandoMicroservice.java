@@ -15,15 +15,16 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class LandoMicroservice  extends MicroService {
+    //------------------------------------fields----------------------------------------------
     private long duration;
     Diary diary;
-
+    //----------------------------------constructors------------------------------------------
     public LandoMicroservice(long duration) {
         super("Lando");
         this.duration = duration;
         diary = Diary.getInstance();
     }
-
+    //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // TerminateBroadcast

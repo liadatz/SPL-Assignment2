@@ -8,7 +8,6 @@ public class DummyMicroService extends MicroService {
         super(string);
     }
 
-
     @Override
     protected void initialize() {
     }

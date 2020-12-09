@@ -10,15 +10,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusImplTest {
     private MessageBusImpl messageBus;
-    private DummyMicroService a;
-    private DummyEvent dummyEvent;
+    private DummyMicroService a = new DummyMicroService("a");
+    private DummyEvent dummyEvent = new DummyEvent("em");
+    ;
 
 
     @BeforeEach
     void setUp() {
         messageBus = MessageBusImpl.getInstance();
-        a = new DummyMicroService("a");
-        dummyEvent = new DummyEvent("em");
+        //a = new DummyMicroService("a");
+        //dummyEvent = new DummyEvent("em");
     }
 
     @Test
@@ -27,6 +28,7 @@ class MessageBusImplTest {
         messageBus.subscribeEvent(DummyEvent.class, a);
         messageBus.sendEvent(dummyEvent);
         isSent(a, dummyEvent); //use of self- aid test method
+        messageBus.unregister(a);
     }
 
     @Test
@@ -41,6 +43,7 @@ class MessageBusImplTest {
         f = messageBus.sendEvent(dummyEvent);
         messageBus.complete(dummyEvent, Boolean.FALSE);
         assertFalse((Boolean) f.get());
+        messageBus.unregister(a);
     }
 
     @Test
@@ -57,6 +60,9 @@ class MessageBusImplTest {
         //tests if the broadcast message was received properly
         isSent(a, dummyBroadcast);
         isSent(b, dummyBroadcast);
+        messageBus.unregister(a);
+        messageBus.unregister(b);
+
     }
 
     private void isSent(MicroService microService, Message expectedMessage) { //test if a message was received properly after been sent

@@ -17,16 +17,17 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class R2D2Microservice extends MicroService {
+    //------------------------------------fields----------------------------------------------
     private long duration;
     private Diary diary;
-
+    //----------------------------------constructors------------------------------------------
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration = duration;
         diary = Diary.getInstance();
 
     }
-
+    //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
         // DeactivationEvent
@@ -50,3 +51,4 @@ public class R2D2Microservice extends MicroService {
         });
     }
 }
+

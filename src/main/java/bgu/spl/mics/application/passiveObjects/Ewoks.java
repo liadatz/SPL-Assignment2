@@ -12,32 +12,30 @@ import java.util.List;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
+//------------------------------------fields----------------------------------------------
     private Ewok[] ewoks;
-
     private static class SingletonHolder {
         private static Ewoks instance = null;
-
         private SingletonHolder(int numOfEwoks) {
             instance = new Ewoks(numOfEwoks);
         }
     }
-
+//---------------------------------constructors-------------------------------------------
     private Ewoks(int numOfEwoks) {
         ewoks = new Ewok[numOfEwoks];
         for (int i = 0; i < numOfEwoks; i++) {
             ewoks[i] = new Ewok(i + 1);
         }
     }
-
+//------------------------------------getters---------------------------------------------
     public static Ewoks getInstance(int numOfEwoks) {
         SingletonHolder sh = new SingletonHolder(numOfEwoks);
         return SingletonHolder.instance;
     }
-
     public static Ewoks getInstance() {
         return SingletonHolder.instance;
     }
-
+//-----------------------------------methods---------------------------------------------
     public void acquireEwoks(List<Integer> serials) { // check for other ways to prevent starvation
         for (Integer serial : serials) {
             synchronized (ewoks[serial - 1]) {
@@ -52,7 +50,6 @@ public class Ewoks {
             }
         }
     }
-
     public void releaseEwoks(List<Integer> serials) {
         for (Integer serial : serials) {
             synchronized (ewoks[serial - 1]) {
