@@ -29,11 +29,11 @@ public class R2D2Microservice extends MicroService {
 
     @Override
     protected void initialize() {
-        Callback <DeactivationEvent> DeCallback = (DeactivationEvent e)->{
+        // DeactivationEvent
+        Callback<DeactivationEvent> DeCallback = (DeactivationEvent e) -> {
             try {
                 MILLISECONDS.sleep(duration);
-            }
-            catch (InterruptedException eX){
+            } catch (InterruptedException eX) {
                 eX.printStackTrace();
             }
             complete(e, Boolean.TRUE);
@@ -42,8 +42,11 @@ public class R2D2Microservice extends MicroService {
             sendEvent(bombEvent); // notify Lando that shield deactivation is done
         };
         subscribeEvent(DeactivationEvent.class, DeCallback);
-        subscribeBroadcast(TerminateBroadcast.class, callback->{
+
+        // TerminateBroadcast
+        subscribeBroadcast(TerminateBroadcast.class, callback -> {
             terminate();
             diary.setTerminateTime(this, System.currentTimeMillis());
-        });    }
+        });
+    }
 }

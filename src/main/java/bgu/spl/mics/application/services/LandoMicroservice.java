@@ -26,6 +26,13 @@ public class LandoMicroservice  extends MicroService {
 
     @Override
     protected void initialize() {
+        // TerminateBroadcast
+        subscribeBroadcast(TerminateBroadcast.class, callback->{
+            terminate();
+            diary.setTerminateTime(this, System.currentTimeMillis());
+        });
+
+        // BombDestroyerEvent
         Callback<BombDestroyerEvent> DeCallback = (BombDestroyerEvent e)->{
             try {
                 MILLISECONDS.sleep(duration);
@@ -34,12 +41,8 @@ public class LandoMicroservice  extends MicroService {
                 eX.printStackTrace();
             }
             TerminateBroadcast terminate = new TerminateBroadcast();
-            subscribeBroadcast(TerminateBroadcast.class, callback->{
-                terminate();
-                diary.setTerminateTime(this, System.currentTimeMillis());
-            });
             sendBroadcast(terminate); //notify all microservices that the attack was done
         };
-       
+        subscribeEvent(BombDestroyerEvent.class, DeCallback);
     }
 }

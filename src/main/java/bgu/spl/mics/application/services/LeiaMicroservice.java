@@ -9,6 +9,7 @@ import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.messages.FinishAttacksBroadcast;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
@@ -37,6 +38,7 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
+        // Wait until attackers are ready
         while (!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
             try {
                 wait();
@@ -49,6 +51,11 @@ public class LeiaMicroservice extends MicroService {
             AttackEvent newAttack = new AttackEvent(attack.getSerials(), attack.getDuration());
             futuresTable.put(newAttack, sendEvent(newAttack)); //keeps all futures. is using concurrentHashMap is enough? few threads have access to futures.
         }
+
+        // Tell HanSolo and C3PO that there no more attacks
+        FinishAttacksBroadcast finishAttacksBroadcast = new FinishAttacksBroadcast();
+        sendBroadcast(finishAttacksBroadcast);
+
         //'Wait for attack to finish' phase
         for (Event key: futuresTable.keySet()) {
                 futuresTable.get(key).get(); //blocking if future is not resolved. is it enough? do we need to check if return value is indeed true? because in our program it will never be false
@@ -57,6 +64,8 @@ public class LeiaMicroservice extends MicroService {
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         deactivationFutrue = sendEvent(deactivationEvent);
         deactivationFutrue.get(); //block and wait until deactivation future is resolved
+
+        // TerminateBroadcast
         subscribeBroadcast(TerminateBroadcast.class, callback->{
             terminate();
             diary.setTerminateTime(this, System.currentTimeMillis());
