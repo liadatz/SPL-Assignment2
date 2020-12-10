@@ -42,8 +42,8 @@ public class MessageBusImpl implements MessageBus {
 					newRoundRobin.push(m);
 					eventSubscribers.put(type, newRoundRobin);
 				}
+				else eventSubscribers.get(type).push(m);
 			}
-			eventSubscribers.get(type).push(m);
 	}
 
 	@Override
@@ -54,9 +54,8 @@ public class MessageBusImpl implements MessageBus {
 				newArrayList.add(m);
 				broadcastSubscribers.put(type, newArrayList);
 			}
+			else broadcastSubscribers.get(type).add(m);
 		}
-		broadcastSubscribers.get(type).add(m);
-
 	}
 
 	@Override
