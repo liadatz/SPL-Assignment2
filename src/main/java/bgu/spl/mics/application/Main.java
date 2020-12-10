@@ -1,11 +1,14 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.passiveObjects.Input;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -18,12 +21,6 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
-        List<Integer> a = new ArrayList<Integer>();
-        a.add(0);
-        a.add(1);
-        a.add(2);
-        a.remove(1);
-        a.get(1);
         // Read from JSON file and import to java Object
         Gson gson = new Gson();
         Reader reader = new FileReader(args[0]);
@@ -31,6 +28,7 @@ public class Main {
 
         // Initiate PassiveObjects
         Ewoks ewoks = Ewoks.getInstance(input.getEwoks());
+        Diary diary = Diary.getInstance();
 
         // MicroServices Construction
         HanSoloMicroservice HanSolo = new HanSoloMicroservice();
@@ -61,6 +59,8 @@ public class Main {
         LeiaThread.join();
 
         // Diary to JSON File
-
+        FileWriter writer = new FileWriter(args[1]);
+        gson = new GsonBuilder().setPrettyPrinting().create();
+        gson.toJson(diary, writer);
     }
 }
