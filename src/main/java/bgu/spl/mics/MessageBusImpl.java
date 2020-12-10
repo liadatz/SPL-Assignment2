@@ -11,18 +11,17 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
 //------------------------------------fields----------------------------------------------
-
 	private static class SingletonHolder {
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
-	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> queuesMap;
+	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> MicroservicesQueues;
 	private final ConcurrentHashMap<Class<? extends Event<?>>, BlockingQueue<BlockingQueue<Message>>> eventSubscribers;
 	private final ConcurrentHashMap<Class<? extends Broadcast>, BlockingQueue<BlockingQueue<Message>>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> eventFutures;
 	private final Object lock = new Object();
 //--------------------------------constructors--------------------------------------------
 	private MessageBusImpl() {
-		queuesMap = new ConcurrentHashMap<>();
+		MicroservicesQueues = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
 		broadcastSubscribers = new ConcurrentHashMap<>();
 		eventFutures = new ConcurrentHashMap<>();
@@ -39,7 +38,7 @@ public class MessageBusImpl implements MessageBus {
 					eventSubscribers.put(type, new LinkedBlockingQueue<>());
 				}
 			}
-			eventSubscribers.get(type).offer(queuesMap.get(m));
+			eventSubscribers.get(type).offer(MicroservicesQueues.get(m));
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class MessageBusImpl implements MessageBus {
 				broadcastSubscribers.put(type, new LinkedBlockingQueue<>());
 			}
 		}
-		broadcastSubscribers.get(type).offer(queuesMap.get(m));
+		broadcastSubscribers.get(type).offer(MicroservicesQueues.get(m));
 
 	}
 
@@ -102,14 +101,14 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		if (!isRegistered(m))
-			queuesMap.put(m, new LinkedBlockingQueue<Message>());
+			MicroservicesQueues.put(m, new LinkedBlockingQueue<Message>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
 		synchronized (lock) {
 			if (m != null) {
-				queuesMap.remove(m);//makes all m's message queues in eventSubscribers and broadcastSubscribers null
+				MicroservicesQueues.remove(m);//makes all m's message queues in eventSubscribers and broadcastSubscribers null
 			}
 		}
 	}
@@ -117,13 +116,13 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 
-		if (m != null && queuesMap.containsKey(m)){
-			return queuesMap.get(m).take(); //take is blocking method
+		if (m != null && MicroservicesQueues.containsKey(m)){
+			return MicroservicesQueues.get(m).take(); //take is blocking method
 		}
 		return null;
 	}
 
 	private boolean isRegistered(MicroService m){
-		return queuesMap.containsKey(m);
+		return MicroservicesQueues.containsKey(m);
 	}
 }

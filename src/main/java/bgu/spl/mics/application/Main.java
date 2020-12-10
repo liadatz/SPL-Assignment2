@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the Main class of the application. You should parse the input file,
@@ -16,6 +18,12 @@ import java.io.Reader;
  */
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
+        List<Integer> a = new ArrayList<Integer>();
+        a.add(0);
+        a.add(1);
+        a.add(2);
+        a.remove(1);
+        a.get(1);
         // Read from JSON file and import to java Object
         Gson gson = new Gson();
         Reader reader = new FileReader(args[0]);
