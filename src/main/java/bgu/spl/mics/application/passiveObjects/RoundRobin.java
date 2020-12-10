@@ -38,4 +38,7 @@ public class RoundRobin {
         else
             index.set(0);
        }
+       public boolean isEmpty(){
+        return list.isEmpty();
+       }
 }

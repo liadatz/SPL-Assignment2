@@ -80,7 +80,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		synchronized (eventSubscribers) {
-			if (eventSubscribers.containsKey(e.getClass())) {
+			if (eventSubscribers.containsKey(e.getClass()) && !eventSubscribers.get(e.getClass()).isEmpty()) {
 				MicroService first = eventSubscribers.get(e.getClass()).pop();
 				MicroservicesQueues.get(first).offer(e);
 				Future<T> future = new Future<T>();

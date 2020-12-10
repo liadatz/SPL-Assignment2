@@ -36,7 +36,9 @@ public class LeiaMicroservice extends MicroService {
         // Wait until attackers are ready
         while (!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
             try {
-                wait();
+                synchronized (this) {
+                    wait();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

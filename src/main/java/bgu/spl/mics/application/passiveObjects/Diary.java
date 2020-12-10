@@ -1,4 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -9,7 +10,44 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
-//--------------------------fields--------------------------------------
+
+    public AtomicInteger getNumberOfAttacks() {
+        return totalAttacks;
+    }
+
+    public long getC3POFinish() {
+        return C3POFinish;
+    }
+
+    public long getR2D2Deactivate() {
+        return R2D2Deactivate;
+    }
+
+    public long getHanSoloFinish() {
+        return HanSoloFinish;
+    }
+
+    public long getHanSoloTerminate() {
+        return HanSoloTerminate;
+    }
+
+    public long getC3POTerminate() {
+        return C3P0Terminate;
+    }
+
+    public long getLandoTerminate() {
+        return LandoTerminate;
+    }
+
+    public long getR2D2Terminate() {
+        return R2D2Terminate;
+    }
+
+    public void resetNumberAttacks() {
+        totalAttacks.set(0);
+    }
+
+    //--------------------------fields--------------------------------------
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
