@@ -1,4 +1,7 @@
 package bgu.spl.mics;
+import bgu.spl.mics.application.passiveObjects.RoundRobin;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,10 +18,9 @@ public class MessageBusImpl implements MessageBus {
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
 	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> MicroservicesQueues;
-	private final ConcurrentHashMap<Class<? extends Event<?>>, BlockingQueue<BlockingQueue<Message>>> eventSubscribers;
-	private final ConcurrentHashMap<Class<? extends Broadcast>, BlockingQueue<BlockingQueue<Message>>> broadcastSubscribers;
+	private final ConcurrentHashMap<Class<? extends Event<?>>, RoundRobin> eventSubscribers;
+	private final ConcurrentHashMap<Class<? extends Broadcast>, ArrayList<MicroService>> broadcastSubscribers;
 	private ConcurrentHashMap<Event, Future> eventFutures;
-	private final Object lock = new Object();
 //--------------------------------constructors--------------------------------------------
 	private MessageBusImpl() {
 		MicroservicesQueues = new ConcurrentHashMap<>();
@@ -34,21 +36,26 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m){
 			synchronized (eventSubscribers) {
+				// if no one subscribed to this event before
 				if (!eventSubscribers.containsKey(type)) {
-					eventSubscribers.put(type, new LinkedBlockingQueue<>());
+					RoundRobin newRoundRobin = new RoundRobin();
+					newRoundRobin.push(m);
+					eventSubscribers.put(type, newRoundRobin);
 				}
 			}
-			eventSubscribers.get(type).offer(MicroservicesQueues.get(m));
+			eventSubscribers.get(type).push(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		synchronized (broadcastSubscribers) {
 			if (!broadcastSubscribers.containsKey(type)) {
-				broadcastSubscribers.put(type, new LinkedBlockingQueue<>());
+				ArrayList<MicroService> newArrayList = new ArrayList<>();
+				newArrayList.add(m);
+				broadcastSubscribers.put(type, newArrayList);
 			}
 		}
-		broadcastSubscribers.get(type).offer(MicroservicesQueues.get(m));
+		broadcastSubscribers.get(type).add(m);
 
 	}
 
@@ -64,14 +71,8 @@ public class MessageBusImpl implements MessageBus {
 	public void sendBroadcast(Broadcast b) {
 		synchronized (broadcastSubscribers) {
 			if (broadcastSubscribers.containsKey(b.getClass()) && !(broadcastSubscribers.get(b.getClass()).isEmpty())) {
-				BlockingQueue<BlockingQueue<Message>> polled = broadcastSubscribers.get(b.getClass());
-				Iterator<BlockingQueue<Message>> iter = polled.iterator();
-				while (iter.hasNext()) {
-					BlockingQueue<Message> next = iter.next();
-					synchronized (lock) {
-						if (next != null)
-							next.offer(b);
-					}
+				for (MicroService m : broadcastSubscribers.get(b.getClass())) {
+					MicroservicesQueues.get(m).offer(b);
 				}
 			}
 		}
@@ -81,18 +82,11 @@ public class MessageBusImpl implements MessageBus {
 	public <T> Future<T> sendEvent(Event<T> e) {
 		synchronized (eventSubscribers) {
 			if (eventSubscribers.containsKey(e.getClass())) {
-				BlockingQueue<Message> polled = null;
-				while (polled == null && !eventSubscribers.get(e.getClass()).isEmpty())
-					polled = eventSubscribers.get(e.getClass()).poll();
-				synchronized (lock) {
-					if (polled != null) {
-						polled.offer(e);
-						eventSubscribers.get(e.getClass()).offer(polled);
-						Future<T> future = new Future<T>();
-						eventFutures.put(e, future);
-						return future;
-					}
-				}
+				MicroService first = eventSubscribers.get(e.getClass()).pop();
+				MicroservicesQueues.get(first).offer(e);
+				Future<T> future = new Future<T>();
+				eventFutures.put(e, future);
+				return future;
 			}
 		}
 		return null;
@@ -106,9 +100,16 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) {
-		synchronized (lock) {
-			if (m != null) {
-				MicroservicesQueues.remove(m);//makes all m's message queues in eventSubscribers and broadcastSubscribers null
+		if (m != null) {
+			// Remove 'm' from MicroservicesQueues
+			MicroservicesQueues.remove(m);
+			// Remove 'm' from all RoundRobins
+			for (RoundRobin currentRoundRobin : eventSubscribers.values()) {
+				currentRoundRobin.remove(m);
+			}
+			// Remove 'm' from all broadcasts
+			for (ArrayList<MicroService> currentArrayList : broadcastSubscribers.values()) {
+				currentArrayList.remove(m);
 			}
 		}
 	}

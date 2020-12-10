@@ -18,8 +18,8 @@ class MessageBusImplTest {
     @BeforeEach
     void setUp() {
         messageBus = MessageBusImpl.getInstance();
-        //a = new DummyMicroService("a");
-        //dummyEvent = new DummyEvent("em");
+        a = new DummyMicroService("a");
+        dummyEvent = new DummyEvent("em");
     }
 
     @Test
