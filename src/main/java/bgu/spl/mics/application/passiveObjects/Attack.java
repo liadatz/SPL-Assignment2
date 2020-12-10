@@ -1,4 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -17,6 +18,7 @@ public class Attack {
      * Constructor.
      */
     public Attack(List<Integer> serialNumbers, int duration) {
+        Collections.sort(serialNumbers);
         this.serials = serialNumbers;
         this.duration = duration;
     }
