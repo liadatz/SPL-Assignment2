@@ -41,7 +41,9 @@ public class LandoMicroservice  extends MicroService {
                 eX.printStackTrace();
             }
             TerminateBroadcast terminate = new TerminateBroadcast();
+            System.out.println("enter");
             sendBroadcast(terminate); //notify all microservices that the attack was done
+            System.out.println("finish");
             System.out.println(this.getName() + " is finish handling BombDestroyerEvent and sent TerminateBroadcast"); // log
         };
         subscribeEvent(BombDestroyerEvent.class, DeCallback);

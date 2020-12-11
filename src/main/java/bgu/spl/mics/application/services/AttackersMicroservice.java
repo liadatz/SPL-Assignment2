@@ -43,10 +43,6 @@ public abstract class AttackersMicroservice extends MicroService {
 //        diary.increaseNumOfAttackers();
 //        notifyAll();
         Main.waitForAttackers.countDown();
-        subscribeBroadcast(TerminateBroadcast.class, callback -> {
-            terminate();
-            diary.setTerminateTime(this, System.currentTimeMillis());
-        });
 
         // FinishAttacks
         subscribeBroadcast(FinishAttacksBroadcast.class, callback -> {
