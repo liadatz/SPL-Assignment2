@@ -23,8 +23,10 @@ public abstract class AttackersMicroservice extends MicroService {
     //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
+        System.out.println(this.getName() + " is initializing"); // log
         // Attacks
         Callback<AttackEvent> attackCallback = (AttackEvent e) -> {
+            System.out.println(this.getName() + " is handling attack"); // log
             ewoks.acquireEwoks(e.getEwoksSerials()); //blocking method
             try {
                 MILLISECONDS.sleep(e.getDuration());
@@ -34,9 +36,11 @@ public abstract class AttackersMicroservice extends MicroService {
             ewoks.releaseEwoks(e.getEwoksSerials());
             complete(e, true);
             diary.increaseTotalAttacks();
+            System.out.println(this.getName() + " is finish handling attack"); // log
         };
         subscribeEvent(AttackEvent.class, attackCallback);
         diary.increaseNumOfAttackers();
+        notifyAll();
         subscribeBroadcast(TerminateBroadcast.class, callback -> {
             terminate();
             diary.setTerminateTime(this, System.currentTimeMillis());

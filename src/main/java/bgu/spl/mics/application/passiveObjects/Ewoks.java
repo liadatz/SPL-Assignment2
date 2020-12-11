@@ -41,6 +41,7 @@ public class Ewoks {
                     try {
                         wait();
                     } catch (InterruptedException e) {
+                        System.out.println("Failed acquiring Ewoks"); // log
                         e.printStackTrace();
                     }
                 }

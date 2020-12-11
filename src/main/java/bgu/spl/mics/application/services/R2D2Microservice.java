@@ -28,8 +28,10 @@ public class R2D2Microservice extends MicroService {
 //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
+        System.out.println(this.getName() + " is initializing"); // log
         // DeactivationEvent
         Callback<DeactivationEvent> DeCallback = (DeactivationEvent e) -> {
+            System.out.println("R2D2 start handling DeactivationEvent"); // log
             try {
                 MILLISECONDS.sleep(duration);
             } catch (InterruptedException eX) {
@@ -37,6 +39,7 @@ public class R2D2Microservice extends MicroService {
             }
             complete(e, Boolean.TRUE);
             diary.setDeactivateTime(System.currentTimeMillis()); // update log in diary
+            System.out.println("R2D2 finish handling DeactivationEvent"); // log
         };
         subscribeEvent(DeactivationEvent.class, DeCallback);
 

@@ -93,12 +93,14 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
+		System.out.println(m.getName() + " is registering"); // log
 		if (!isRegistered(m))
 			MicroservicesQueues.put(m, new LinkedBlockingQueue<Message>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
+		System.out.println(m.getName() + " is unregistering"); // log
 		if (m != null) {
 			// Remove 'm' from MicroservicesQueues
 			MicroservicesQueues.remove(m);
