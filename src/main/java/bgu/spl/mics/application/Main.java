@@ -11,8 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * This is the Main class of the application. You should parse the input file,
@@ -20,6 +19,9 @@ import java.util.List;
  * In the end, you should output a JSON.
  */
 public class Main {
+    // CountDownLatch for Leia and Attackers
+    public static CountDownLatch waitForAttackers = new CountDownLatch(4);
+
     public static void main(String[] args) throws IOException, InterruptedException {
         // Read from JSON file and import to java Object
         Gson gson = new Gson();
@@ -62,5 +64,7 @@ public class Main {
         FileWriter writer = new FileWriter(args[1]);
         gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(diary, writer);
+        writer.flush();
+        writer.close();
     }
 }

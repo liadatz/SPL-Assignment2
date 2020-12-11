@@ -51,7 +51,7 @@ public class Diary {
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
-    private AtomicInteger numOfAttackers;
+//    private AtomicInteger numOfAttackers;
     private AtomicInteger totalAttacks;
     private long HanSoloFinish = 0;
     private long C3POFinish = 0;
@@ -63,27 +63,27 @@ public class Diary {
     private long LandoTerminate = 0;
 //------------------------constructor------------------------------------
     private Diary() {
-        numOfAttackers = new AtomicInteger(0);
+//        numOfAttackers = new AtomicInteger(0);
         totalAttacks = new AtomicInteger(0);
     }
 //--------------------------getters--------------------------------------
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
-    public AtomicInteger getNumOfAttackers() {
-        return numOfAttackers;
-    }
+//    public AtomicInteger getNumOfAttackers() {
+//        return numOfAttackers;
+//    }
 //--------------------------setter--------------------------------------
-    public void increaseNumOfAttackers() {
-        numOfAttackers.incrementAndGet();
-    }
+//    public void increaseNumOfAttackers() {
+//        numOfAttackers.incrementAndGet();
+//    }
     public void increaseTotalAttacks() {
         totalAttacks.incrementAndGet();
     }
     public void setTerminateTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
-            case "HanSolo":
+            case "Han":
                 HanSoloTerminate = time;
             case "C3PO":
                 C3P0Terminate = time;
@@ -98,7 +98,7 @@ public class Diary {
     public void setFinishTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
-            case "HanSolo":
+            case "Han":
                 HanSoloFinish = time;
             case "C3PO":
                 C3POFinish = time;

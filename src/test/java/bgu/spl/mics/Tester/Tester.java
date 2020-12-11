@@ -325,8 +325,7 @@ public class Tester {
             hanSoloObj = new HanSoloMicroservice();
             messageInstance.register(hanSoloObj);
             messageInstance.subscribeEvent(Event1.class, hanSoloObj);
-            messageInstance.subscribeBroadcast(Broadcast1.class
-                    , hanSoloObj);
+            messageInstance.subscribeBroadcast(Broadcast1.class, hanSoloObj);
             //Checking If sendEvent Is Synced
             Thread hanSoloSender1 = new Thread(() -> {
                 for (int i = 0; i < 500; i++) {
@@ -370,10 +369,12 @@ public class Tester {
                 if (numMesssagesReceived >= 1500)
                     break; //If you are not syncing you will most likely get less then 1500
             } while (true);
+            messageInstance.unregister(hanSoloObj);
             System.out.println("Passed Sync Send Event Test! All Is Fine.\r\n----------------------------------");
 
             System.out.println("\r\nInitating Test Sync By Sabina 1.....\r\n");
             boolean passedTestSabina = true;
+//
 
             for (int j = 0; passedTestSabina && j < 100; j++) {
                 Thread.sleep(10);

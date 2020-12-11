@@ -36,7 +36,7 @@ public class Ewoks {
 //-----------------------------------methods---------------------------------------------
     public void acquireEwoks(List<Integer> serials) { // check for other ways to prevent starvation
         for (Integer serial : serials) {
-            synchronized (ewoks[serial - 1]) {
+            synchronized (this) {
                 while (!ewoks[serial - 1].getAvailable()) {
                     try {
                         wait();
@@ -51,10 +51,10 @@ public class Ewoks {
     }
     public void releaseEwoks(List<Integer> serials) {
         for (Integer serial : serials) {
-            synchronized (ewoks[serial - 1]) {
+            synchronized (this) {
                 ewoks[serial - 1].release();
+                notifyAll();
             }
-            notifyAll(); // should it be inside the loop instead?
         }
     }
 }

@@ -122,7 +122,7 @@ public abstract class MicroService implements Runnable {
      * null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        System.out.println(this.getName() + "is sending Event - " + e.getClass()); //log
+        System.out.println(this.getName() + " is sending Event - " + e.getClass()); //log
         return messageBus.sendEvent(e);
     }
 
@@ -134,7 +134,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        System.out.println(this.getName() + "is sending Broadcast - " + b.getClass()); //log
+        System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //log
         messageBus.sendBroadcast(b);
     }
 

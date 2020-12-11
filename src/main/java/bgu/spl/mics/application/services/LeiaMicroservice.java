@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
@@ -34,12 +35,12 @@ public class LeiaMicroservice extends MicroService {
     @Override
     protected void initialize() {
         System.out.println(this.getName() + " is initializing"); // log
+        boolean isReady = false;
         // Wait until attackers are ready
-        while (!diary.getNumOfAttackers().equals(new AtomicInteger(2))) {
+        while (!isReady) {
             try {
-                synchronized (this) {
-                    wait();
-                }
+                Main.waitForAttackers.await();
+                isReady = true;
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.out.println("Leia failed waiting for other attackers"); // log

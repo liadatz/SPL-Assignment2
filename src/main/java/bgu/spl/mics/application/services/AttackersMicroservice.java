@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.FinishAttacksBroadcast;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
@@ -39,8 +40,9 @@ public abstract class AttackersMicroservice extends MicroService {
             System.out.println(this.getName() + " is finish handling attack"); // log
         };
         subscribeEvent(AttackEvent.class, attackCallback);
-        diary.increaseNumOfAttackers();
-        notifyAll();
+//        diary.increaseNumOfAttackers();
+//        notifyAll();
+        Main.waitForAttackers.countDown();
         subscribeBroadcast(TerminateBroadcast.class, callback -> {
             terminate();
             diary.setTerminateTime(this, System.currentTimeMillis());
@@ -50,6 +52,7 @@ public abstract class AttackersMicroservice extends MicroService {
         subscribeBroadcast(FinishAttacksBroadcast.class, callback -> {
             diary.setFinishTime(this, System.currentTimeMillis());
         });
+        Main.waitForAttackers.countDown();
 
         // TerminateBroadcast
         subscribeBroadcast(TerminateBroadcast.class, callback -> {

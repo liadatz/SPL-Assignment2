@@ -24,13 +24,17 @@ public class RoundRobin {
         return output;
     }
     public void remove(MicroService m){
-        if (list.indexOf(m) < index.get()) {
-            index.getAndDecrement();
+        int mLocation = list.indexOf(m);
+        if (mLocation != -1) {
+            if (mLocation < index.get()) {
+                index.getAndDecrement();
+            }
+            else if (mLocation == index.get() & index.get() == list.size()){
+                int expected = index.get();
+                index.compareAndSet(expected, 0);
+            }
+            list.remove(m);
         }
-        else if (list.indexOf(m) == index.get() & index.get() == list.size()){
-            index.set(0);
-        }
-        list.remove(m);
     }
     public void updateIndex(){
         if (index.get() < list.size()-1)

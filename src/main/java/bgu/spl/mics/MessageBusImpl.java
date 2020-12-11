@@ -105,12 +105,16 @@ public class MessageBusImpl implements MessageBus {
 			// Remove 'm' from MicroservicesQueues
 			MicroservicesQueues.remove(m);
 			// Remove 'm' from all RoundRobins
-			for (RoundRobin currentRoundRobin : eventSubscribers.values()) {
-				currentRoundRobin.remove(m);
+			synchronized (eventSubscribers) {
+				for (RoundRobin currentRoundRobin : eventSubscribers.values()) {
+					currentRoundRobin.remove(m);
+				}
 			}
 			// Remove 'm' from all broadcasts
-			for (ArrayList<MicroService> currentArrayList : broadcastSubscribers.values()) {
-				currentArrayList.remove(m);
+			synchronized (broadcastSubscribers) {
+				for (ArrayList<MicroService> currentArrayList : broadcastSubscribers.values()) {
+					currentArrayList.remove(m);
+				}
 			}
 		}
 	}
