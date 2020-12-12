@@ -22,7 +22,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> MicroservicesQueues;
 	private final ConcurrentHashMap<Class<? extends Event<?>>, RoundRobin> eventSubscribers;
 	private final ConcurrentHashMap<Class<? extends Broadcast>, ArrayList<MicroService>> broadcastSubscribers;
-	private ConcurrentHashMap<Event, Future> eventFutures;
+	private final ConcurrentHashMap<Event, Future> eventFutures;
 //--------------------------------constructors--------------------------------------------
 	private MessageBusImpl() {
 		MicroservicesQueues = new ConcurrentHashMap<>();
@@ -63,10 +63,13 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
+		synchronized (eventFutures) {
+//			System.out.println("resolving event " + e.hashCode());
+//			System.out.println(e.hashCode() + " " + eventFutures.containsKey(e) + " in complete");
 			if (eventFutures.containsKey(e)) {
 				eventFutures.get(e).resolve(result);
 			}
-
+		}
 	}
 
 	@Override
@@ -84,10 +87,13 @@ public class MessageBusImpl implements MessageBus {
 	public <T> Future<T> sendEvent(Event<T> e) {
 		synchronized (eventSubscribers) {
 			if (eventSubscribers.containsKey(e.getClass()) && !eventSubscribers.get(e.getClass()).isEmpty()) {
+				Future<T> future = new Future<T>();
+				synchronized (eventFutures) {
+					eventFutures.put(e, future);
+				}
 				MicroService first = eventSubscribers.get(e.getClass()).pop();
 				MicroservicesQueues.get(first).offer(e);
-				Future<T> future = new Future<T>();
-				eventFutures.put(e, future);
+//				System.out.println(e.hashCode() + " " + eventFutures.containsKey(e) + " in sendEvent");
 				return future;
 			}
 		}
@@ -125,7 +131,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			if (m != null && MicroservicesQueues.containsKey(m)) {
-				System.out.println("num of messages for "+m.getName()+": "+MicroservicesQueues.get(m).size());
+//				System.out.println("num of messages for "+m.getName()+": "+MicroservicesQueues.get(m).size());
 				return MicroservicesQueues.get(m).take(); //take is blocking method
 			}
 			return null;

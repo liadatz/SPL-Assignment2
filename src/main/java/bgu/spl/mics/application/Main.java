@@ -26,7 +26,7 @@ public class Main {
         // Read from JSON file and import to java Object
         for (int i = 0; i < 50; i++) {
             Gson gson = new Gson();
-        Reader reader = new FileReader(args[0]);
+        Reader reader = new FileReader("./Tests.json");
         Input input = gson.fromJson(reader, Input.class);
 
         // Initiate PassiveObjects

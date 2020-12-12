@@ -130,10 +130,10 @@ public class Tester {
                 //  System.out.println("Your Deactivation Shield Finished Time --> " + shieldDeactivationTestValue + "  Test Value Should Of Been -> " + currentTests[i].getR2D2Sleep());
                 //  if (Math.round(shieldDeactivationTestValue / 100) * 100 == (Math.round(currentTests[i].getR2D2Sleep()) / 100) * 100)
                 //      passedFirstTest = true; 
-                
+
                 boolean passedSecondTest = false; //Checking Num Of Attacks Logic
                 boolean passedThirdTest = true;  //Checking Graceful Termination (Should be at the same mili second~)
-          
+
                 if (numOfAttacksInTest.get() == (currentTests[i].getNumberOfAttacks().get()))
                     passedSecondTest = true;
 
@@ -215,28 +215,21 @@ public class Tester {
         @Override
         protected void initialize() {
             subscribeBroadcast(Broadcast1.class,ev->{
-                terminate(); //stuck #2 here. even if #1 is solved, this line still blocks. always one sender does not finish terminating.
-                //System.out.println(this.getName()+" terminated");
+                terminate();
                 terminate.countDown();
             });
-
             Future<String> future=sendEvent(new Event3());
-
             if (future==null)
                 System.out.println("no MicroServer is registered to the event");
             else{
-                //terminateSend.countDown();
-                String result=future.get(); //stuck #1 here, one event always never get resolved, probably because it never being dealt with (never pulled by await message)
-                terminateSend.countDown();
-                System.out.println(this.getName()+" counter status: "+terminateSend.getCount()+" time: "+System.currentTimeMillis());
+                String result=future.get();
                 if (result.equals("M1"))
                     numberOfM1.getAndIncrement();
                 else if (result.equals("M2"))
                     numberOfM2.getAndIncrement();
                 else numberOfM3.getAndIncrement();
             }
-            //terminateSend.countDown();
-            //System.out.println(this.getName()+" counter status: "+terminateSend.getCount()+" time: "+System.currentTimeMillis());
+            terminateSend.countDown();
         }
     }
     static AtomicInteger numberOfM1=new AtomicInteger(0);
@@ -332,13 +325,14 @@ public class Tester {
             hanSoloObj = new HanSoloMicroservice();
             messageInstance.register(hanSoloObj);
             messageInstance.subscribeEvent(Event1.class, hanSoloObj);
-            messageInstance.subscribeBroadcast(Broadcast1.class, hanSoloObj);
+            messageInstance.subscribeBroadcast(Broadcast1.class
+                    , hanSoloObj);
             //Checking If sendEvent Is Synced
             Thread hanSoloSender1 = new Thread(() -> {
                 for (int i = 0; i < 500; i++) {
                     messageInstance.sendEvent(new Event1());
                     try {
-                         Thread.sleep(5);
+                        Thread.sleep(5);
                     } catch (Exception e) {
                     }
                 }
@@ -347,7 +341,7 @@ public class Tester {
                 for (int i = 0; i < 500; i++) {
                     messageInstance.sendEvent(new Event1());
                     try {
-                               Thread.sleep(2);
+                        Thread.sleep(2);
                     } catch (Exception e) {
                     }
                 }
@@ -356,7 +350,7 @@ public class Tester {
                 for (int i = 0; i < 500; i++) {
                     messageInstance.sendEvent(new Event1());
                     try {
-                                Thread.sleep(3);
+                        Thread.sleep(3);
                     } catch (Exception e) {
                     }
                 }
@@ -376,15 +370,12 @@ public class Tester {
                 if (numMesssagesReceived >= 1500)
                     break; //If you are not syncing you will most likely get less then 1500
             } while (true);
-            messageInstance.unregister(hanSoloObj);
             System.out.println("Passed Sync Send Event Test! All Is Fine.\r\n----------------------------------");
 
             System.out.println("\r\nInitating Test Sync By Sabina 1.....\r\n");
             boolean passedTestSabina = true;
-//
 
-            for (int k = 1; passedTestSabina && k < 101; k++) {
-                int j=28;
+            for (int j = 0; passedTestSabina && j < 100; j++) {
                 Thread.sleep(10);
                 numberOfM3.set(0);
                 numberOfM1.set(0);
@@ -396,19 +387,13 @@ public class Tester {
                 new Thread(new TestMicroServer("M3",initialize,terminate)).start();
                 initialize.await();
                 CountDownLatch terminateSend = new CountDownLatch(j);
-                //System.out.println("initialize countDown to: "+terminateSend.getCount());
-
                 for (int i = 1; i <= j; i++) {
-                    new Thread(new SenderMicroServer("sender number: "+i, terminateSend,terminate)).start();
+                    new Thread(new SenderMicroServer("sender", terminateSend,terminate)).start();
                 }
                 terminateSend.await();
-                System.out.println("passed obstacle 1");
                 messageInstance.sendBroadcast(new Broadcast1());
-                System.out.println("passed obstacle 2");
                 terminate.await();
-                System.out.println("passed obstacle 3");
                 int numberOfEvents = numberOfM1.get() + numberOfM2.get() + numberOfM3.get();
-                System.out.println("passed obstacle 4");
                 if (numberOfEvents != j) {
                     System.out.println("Test number " + j + " failed---->"+" only " + numberOfEvents + " was resolved out of "+j);
                     passedTestSabina = false;
@@ -418,16 +403,16 @@ public class Tester {
                         System.out.println("Test number " + j + " failed----> one microServer got more than "+ maxNumberOfEventsPerThread+" events problem in round robin");
                         passedTestSabina = false;
                     }
-                    System.out.println("Passed Test Number "+j+"for the "+ k+" time");
+                    System.out.println("Passed Test Number "+j);
                 }
             }
             if(passedTestSabina)
-            System.out.println("\r\nPassed Sync Test Sabina -> " +passedTestSabina);
+                System.out.println("\r\nPassed Sync Test Sabina -> " +passedTestSabina);
             else
                 System.out.println("\r\nFailed Sync Test Sabina -> Unregister/Send Broadcast Sync Issue. Make sure they are synced on the same object");
         }
         catch (Exception logicTestsException) {
             logicTestsException.printStackTrace();
-        }  
+        }
     }
 }
