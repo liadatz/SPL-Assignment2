@@ -188,4 +188,5 @@ public abstract class MicroService implements Runnable {
         }
         messageBus.unregister(this);
     }
+
 }

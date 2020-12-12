@@ -36,25 +36,21 @@ public class Ewoks {
 //-----------------------------------methods---------------------------------------------
     public void acquireEwoks(List<Integer> serials) { // check for other ways to prevent starvation
         for (Integer serial : serials) {
-            synchronized (this) {
-                while (!ewoks[serial - 1].getAvailable()) {
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        System.out.println("Failed acquiring Ewoks"); // log
-                        e.printStackTrace();
-                    }
-                }
+ //               if (!ewoks[serial - 1].getAvailable()) {
+//                    try {
+//                        wait();
+//                    } catch (InterruptedException e) {
+//                        System.out.println("Failed acquiring Ewoks"); // log
+//                        e.printStackTrace();
+//                    }
+
                 ewoks[serial - 1].acquire();
             }
-        }
     }
     public void releaseEwoks(List<Integer> serials) {
         for (Integer serial : serials) {
-            synchronized (this) {
                 ewoks[serial - 1].release();
-                notifyAll();
+                //notifyAll();
             }
         }
-    }
 }

@@ -24,9 +24,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // Read from JSON file and import to java Object
-        for (int i = 0; i < 50; i++) {
-            Gson gson = new Gson();
-        Reader reader = new FileReader("./Tests.json");
+        Gson gson = new Gson();
+        Reader reader = new FileReader("/Users/omer/Desktop/SPL-Assignment2/input.json");
         Input input = gson.fromJson(reader, Input.class);
 
         // Initiate PassiveObjects
@@ -62,12 +61,11 @@ public class Main {
             LeiaThread.join();
 
             // Diary to JSON File
-            FileWriter writer = new FileWriter(args[1]);
+            FileWriter writer = new FileWriter("/Users/omer/Desktop/SPL-Assignment2/output.json");
             gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(diary, writer);
             writer.flush();
             writer.close();
-            System.out.println("******************************finish test number: "+i);
         }
-    }
+
 }
