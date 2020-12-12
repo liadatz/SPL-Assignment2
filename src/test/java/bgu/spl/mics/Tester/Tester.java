@@ -215,21 +215,28 @@ public class Tester {
         @Override
         protected void initialize() {
             subscribeBroadcast(Broadcast1.class,ev->{
-                terminate();
+                terminate(); //stuck #2 here. even if #1 is solved, this line still blocks. always one sender does not finish terminating.
+                //System.out.println(this.getName()+" terminated");
                 terminate.countDown();
             });
+
             Future<String> future=sendEvent(new Event3());
+
             if (future==null)
                 System.out.println("no MicroServer is registered to the event");
             else{
-                String result=future.get();
+                //terminateSend.countDown();
+                String result=future.get(); //stuck #1 here, one event always never get resolved, probably because it never being dealt with (never pulled by await message)
+                terminateSend.countDown();
+                System.out.println(this.getName()+" counter status: "+terminateSend.getCount()+" time: "+System.currentTimeMillis());
                 if (result.equals("M1"))
                     numberOfM1.getAndIncrement();
                 else if (result.equals("M2"))
                     numberOfM2.getAndIncrement();
                 else numberOfM3.getAndIncrement();
             }
-            terminateSend.countDown();
+            //terminateSend.countDown();
+            //System.out.println(this.getName()+" counter status: "+terminateSend.getCount()+" time: "+System.currentTimeMillis());
         }
     }
     static AtomicInteger numberOfM1=new AtomicInteger(0);
@@ -376,7 +383,8 @@ public class Tester {
             boolean passedTestSabina = true;
 //
 
-            for (int j = 0; passedTestSabina && j < 100; j++) {
+            for (int k = 1; passedTestSabina && k < 101; k++) {
+                int j=28;
                 Thread.sleep(10);
                 numberOfM3.set(0);
                 numberOfM1.set(0);
@@ -388,13 +396,19 @@ public class Tester {
                 new Thread(new TestMicroServer("M3",initialize,terminate)).start();
                 initialize.await();
                 CountDownLatch terminateSend = new CountDownLatch(j);
+                //System.out.println("initialize countDown to: "+terminateSend.getCount());
+
                 for (int i = 1; i <= j; i++) {
-                    new Thread(new SenderMicroServer("sender", terminateSend,terminate)).start();
+                    new Thread(new SenderMicroServer("sender number: "+i, terminateSend,terminate)).start();
                 }
                 terminateSend.await();
+                System.out.println("passed obstacle 1");
                 messageInstance.sendBroadcast(new Broadcast1());
+                System.out.println("passed obstacle 2");
                 terminate.await();
+                System.out.println("passed obstacle 3");
                 int numberOfEvents = numberOfM1.get() + numberOfM2.get() + numberOfM3.get();
+                System.out.println("passed obstacle 4");
                 if (numberOfEvents != j) {
                     System.out.println("Test number " + j + " failed---->"+" only " + numberOfEvents + " was resolved out of "+j);
                     passedTestSabina = false;
@@ -404,7 +418,7 @@ public class Tester {
                         System.out.println("Test number " + j + " failed----> one microServer got more than "+ maxNumberOfEventsPerThread+" events problem in round robin");
                         passedTestSabina = false;
                     }
-                    System.out.println("Passed Test Number "+j);
+                    System.out.println("Passed Test Number "+j+"for the "+ k+" time");
                 }
             }
             if(passedTestSabina)

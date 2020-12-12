@@ -63,9 +63,10 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
-			if (eventFutures.containsKey(e)){
+			if (eventFutures.containsKey(e)) {
 				eventFutures.get(e).resolve(result);
 			}
+
 	}
 
 	@Override
@@ -95,14 +96,14 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		System.out.println(m.getName() + " is registering"); // log
+		//System.out.println(m.getName() + " is registering"); // log
 		if (!isRegistered(m))
 			MicroservicesQueues.put(m, new LinkedBlockingQueue<Message>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		System.out.println(m.getName() + " is unregistering"); // log
+		//System.out.println(m.getName() + " is unregistering"); // log
 		if (m != null) {
 			// Remove 'm' from MicroservicesQueues
 			MicroservicesQueues.remove(m);
@@ -123,11 +124,12 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
+			if (m != null && MicroservicesQueues.containsKey(m)) {
+				System.out.println("num of messages for "+m.getName()+": "+MicroservicesQueues.get(m).size());
+				return MicroservicesQueues.get(m).take(); //take is blocking method
+			}
+			return null;
 
-		if (m != null && MicroservicesQueues.containsKey(m)){
-			return MicroservicesQueues.get(m).take(); //take is blocking method
-		}
-		return null;
 	}
 
 	private boolean isRegistered(MicroService m){

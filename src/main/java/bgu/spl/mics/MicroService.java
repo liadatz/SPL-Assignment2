@@ -31,7 +31,7 @@ public abstract class MicroService implements Runnable {
      *             does not have to be unique)
      */
     public MicroService(String name) {
-        System.out.println(name + " created"); //log
+        //System.out.println(name + " created"); //log
         this.name = name;
         messageBus = MessageBusImpl.getInstance();
         callBacks = new ConcurrentHashMap<>();
@@ -70,12 +70,12 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
+        //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
         messageBus.subscribeEvent(type, this);
         if (!callBacks.contains(type)) {
             callBacks.put(type, callback);
         }
-        System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
+        //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
     }
 
     /**
@@ -100,12 +100,12 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
+        //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
         messageBus.subscribeBroadcast(type, this);
         if (!callBacks.contains(type)) {
             callBacks.put(type, callback);
         }
-        System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
+        //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class MicroService implements Runnable {
      * null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        System.out.println(this.getName() + " is sending Event - " + e.getClass()); //log
+        //System.out.println(this.getName() + " is sending Event - " + e.getClass()); //log
         return messageBus.sendEvent(e);
     }
 
@@ -134,7 +134,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //log
+        //System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //log
         messageBus.sendBroadcast(b);
     }
 
@@ -151,7 +151,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T> void complete(Event<T> e, T result) {
         messageBus.complete(e, result);
-        System.out.println(e.getClass() + " is completed with result " + result + " by " + this.getName()); // log
+        //System.out.println(e.getClass() + " is completed with result " + result + " by " + this.getName()); // log
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
         terminated = true;
-        System.out.println("terminated flag has turn TRUE"); //log
+        //System.out.println("terminated flag has turn TRUE"); //log
     }
 
     /**
@@ -178,9 +178,9 @@ public abstract class MicroService implements Runnable {
         initialize();
         while (!terminated) {
             try {
-                System.out.println(this.getName() + " waiting for a message"); // log
+                //System.out.println(this.getName() + " waiting for a message"); // log
                 Message m = messageBus.awaitMessage(this);
-                System.out.println(this.getName() + " received a message"); // log
+                //System.out.println(this.getName() + " received a message"); // log
                 if (callBacks.containsKey(m.getClass())) callBacks.get(m.getClass()).call(m);
             } catch (InterruptedException e) {
                 terminate();
