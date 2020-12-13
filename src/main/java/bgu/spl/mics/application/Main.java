@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.application.messages.DummyBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.passiveObjects.Input;
@@ -11,6 +12,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**

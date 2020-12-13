@@ -13,7 +13,7 @@ public class RoundRobin {
     public RoundRobin(){
         list = new ArrayList<>();
         index =  new AtomicInteger(0);
-    };
+    }
 //------------------------------------methods---------------------------------------------
     public void push(MicroService m){
         list.add(m);
@@ -38,7 +38,7 @@ public class RoundRobin {
     }
     public void updateIndex(){
         if (index.get() < list.size()-1)
-            index.incrementAndGet();
+            index.getAndIncrement();
         else
             index.set(0);
        }

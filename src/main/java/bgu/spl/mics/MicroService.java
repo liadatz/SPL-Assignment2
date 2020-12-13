@@ -24,7 +24,7 @@ public abstract class MicroService implements Runnable {
     private String name;
     private boolean terminated = false;
     private MessageBusImpl messageBus;
-    private ConcurrentHashMap<Class, Callback> callBacks;
+    private ConcurrentHashMap<Class<? extends Message>, Callback> callBacks;
 //----------------------------------constructors------------------------------------------
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -71,9 +71,11 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
         //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
-        messageBus.subscribeEvent(type, this);
-        if (!callBacks.contains(type)) {
-            callBacks.put(type, callback);
+        if (type != null & callback != null) {
+            messageBus.subscribeEvent(type, this);
+            if (!callBacks.contains(type)) {
+                callBacks.put(type, callback);
+            }
         }
         //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
     }
@@ -101,9 +103,11 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
         //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
-        messageBus.subscribeBroadcast(type, this);
-        if (!callBacks.contains(type)) {
-            callBacks.put(type, callback);
+        if (type != null & callback != null) {
+            messageBus.subscribeBroadcast(type, this);
+            if (!callBacks.contains(type)) {
+                callBacks.put(type, callback);
+            }
         }
         //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
     }
@@ -123,7 +127,9 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
         //System.out.println(this.getName() + " is sending Event - " + e.getClass()); //log
-        return messageBus.sendEvent(e);
+        if (e != null)
+            return messageBus.sendEvent(e);
+        else return null;
     }
 
     /**
@@ -135,7 +141,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final void sendBroadcast(Broadcast b) {
         //System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //log
-        messageBus.sendBroadcast(b);
+        if (b != null)
+            messageBus.sendBroadcast(b);
     }
 
     /**
@@ -150,7 +157,8 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-        messageBus.complete(e, result);
+        if (e != null & result != null)
+            messageBus.complete(e, result);
         //System.out.println(e.getClass() + " is completed with result " + result + " by " + this.getName()); // log
     }
 
@@ -186,7 +194,8 @@ public abstract class MicroService implements Runnable {
                 terminate();
             }
         }
-        messageBus.unregister(this);
+            messageBus.unregister(this);
+        }
     }
 
-}
+

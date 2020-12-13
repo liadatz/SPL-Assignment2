@@ -63,13 +63,9 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
-		synchronized (eventFutures) {
-//			System.out.println("resolving event " + e.hashCode());
-//			System.out.println(e.hashCode() + " " + eventFutures.containsKey(e) + " in complete");
 			if (eventFutures.containsKey(e)) {
 				eventFutures.get(e).resolve(result);
 			}
-		}
 	}
 
 	@Override
@@ -85,12 +81,10 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		synchronized (eventSubscribers) {
+		synchronized (eventSubscribers.get(e.getClass())) {
 			if (eventSubscribers.containsKey(e.getClass()) && !eventSubscribers.get(e.getClass()).isEmpty()) {
-				Future<T> future = new Future<T>();
-				synchronized (eventFutures) {
+				Future<T> future = new Future<>();
 					eventFutures.put(e, future);
-				}
 				MicroService first = eventSubscribers.get(e.getClass()).pop();
 				MicroservicesQueues.get(first).offer(e);
 //				System.out.println(e.hashCode() + " " + eventFutures.containsKey(e) + " in sendEvent");
@@ -103,16 +97,12 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		//System.out.println(m.getName() + " is registering"); // log
-		if (!isRegistered(m))
-			MicroservicesQueues.put(m, new LinkedBlockingQueue<Message>());
+		MicroservicesQueues.putIfAbsent(m, new LinkedBlockingQueue<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
 		//System.out.println(m.getName() + " is unregistering"); // log
-		if (m != null) {
-			// Remove 'm' from MicroservicesQueues
-			MicroservicesQueues.remove(m);
 			// Remove 'm' from all RoundRobins
 			synchronized (eventSubscribers) {
 				for (RoundRobin currentRoundRobin : eventSubscribers.values()) {
@@ -125,21 +115,16 @@ public class MessageBusImpl implements MessageBus {
 					currentArrayList.remove(m);
 				}
 			}
-		}
+			// Remove 'm' from MicroservicesQueues
+			MicroservicesQueues.remove(m);
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-			if (m != null && MicroservicesQueues.containsKey(m)) {
+			if (MicroservicesQueues.containsKey(m)) {
 //				System.out.println("num of messages for "+m.getName()+": "+MicroservicesQueues.get(m).size());
 				return MicroservicesQueues.get(m).take(); //take is blocking method
 			}
 			return null;
-
 	}
-
-	private boolean isRegistered(MicroService m){
-		return MicroservicesQueues.containsKey(m);
-	}
-
 }
