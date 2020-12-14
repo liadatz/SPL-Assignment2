@@ -69,7 +69,7 @@ public class Future<T> {
      * elapsed, return null.
      */
     public synchronized T get(long timeout, TimeUnit unit) { //using monitor that locks a specific Future every time
-        while (!isDone()) {
+        if (!isDone()) {
             try {
                 unit.sleep(timeout);
             } catch (InterruptedException ignored) {
