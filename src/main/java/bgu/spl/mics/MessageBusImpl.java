@@ -35,12 +35,14 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m){
 			synchronized (eventSubscribers) {
-				// if no one subscribed to this event before
+				// If no one subscribed to this event before
+				// create new RoundRobin with 'm' and insert to eventSubscribers
 				if (!eventSubscribers.containsKey(type)) {
 					RoundRobin newRoundRobin = new RoundRobin();
 					newRoundRobin.push(m);
 					eventSubscribers.put(type, newRoundRobin);
 				}
+				// Insert 'm' to Event type RoundRobin
 				else eventSubscribers.get(type).push(m);
 			}
 	}
@@ -48,11 +50,14 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		synchronized (broadcastSubscribers) {
+			// If no one subscribed to this broadcast before
+			// create new list with 'm' and insert to broadcastSubscribers
 			if (!broadcastSubscribers.containsKey(type)) {
 				ArrayList<MicroService> newArrayList = new ArrayList<>();
 				newArrayList.add(m);
 				broadcastSubscribers.put(type, newArrayList);
 			}
+			// Insert 'm' to Broadcast type list
 			else broadcastSubscribers.get(type).add(m);
 		}
 	}
@@ -68,7 +73,10 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void sendBroadcast(Broadcast b) {
 		synchronized (broadcastSubscribers) {
+			// Check if any MicroService registered to 'b' type
+			// & if 'b' type list contains a Microservice at the moment
 			if (broadcastSubscribers.containsKey(b.getClass()) && !(broadcastSubscribers.get(b.getClass()).isEmpty())) {
+				// add 'b' Message to all Microservices Queues
 				for (MicroService m : broadcastSubscribers.get(b.getClass())) {
 					MicroservicesQueues.get(m).offer(b);
 				}
@@ -79,9 +87,12 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		synchronized (eventSubscribers) {
+			// Check if any MicroService registered to 'e' type
+			// & if 'e' RoundRobin contains a Microservice at the moment
 			if (eventSubscribers.containsKey(e.getClass()) && !eventSubscribers.get(e.getClass()).isEmpty()) {
 				Future<T> future = new Future<>();
-					eventFutures.put(e, future);
+				eventFutures.put(e, future);
+				// insert Message to the next available MicroServices
 				MicroService first = eventSubscribers.get(e.getClass()).pop();
 				MicroservicesQueues.get(first).offer(e);
 				return future;
@@ -93,6 +104,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void register(MicroService m) {
 		//System.out.println(m.getName() + " is registering"); // (delete before submission)
+		// Check if 'm' registered before and if not add add 'm' Messages Queue to MicroservicesQueues
 		MicroservicesQueues.putIfAbsent(m, new LinkedBlockingQueue<>());
 	}
 
@@ -117,9 +129,10 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-			if (MicroservicesQueues.containsKey(m)) {
-				return MicroservicesQueues.get(m).take(); //take is blocking method
-			}
-			return null;
+		// Check if 'm' is registered, if so take a Message from his Messages Queue
+		if (MicroservicesQueues.containsKey(m)) {
+			return MicroservicesQueues.get(m).take(); // take is blocking method
+		}
+		return null;
 	}
 }
