@@ -13,7 +13,7 @@ class MessageBusImplTest {
     private DummyMicroService a = new DummyMicroService("a");
     private DummyEvent dummyEvent = new DummyEvent("em");
 
-
+    // Changes: messageBus use singleton method getInstance
     @BeforeEach
     void setUp() {
         messageBus = MessageBusImpl.getInstance();
@@ -21,6 +21,7 @@ class MessageBusImplTest {
         dummyEvent = new DummyEvent("em");
     }
 
+    // Changes: added unregister
     @Test
     void testEvents() { //test for methods 'subscribeEvent', 'sendEvent', 'awaitMessage', 'register'
         messageBus.register(a);
@@ -30,6 +31,7 @@ class MessageBusImplTest {
         messageBus.unregister(a);
     }
 
+    // Changes: added unregister and assertFalse from Future result
     @Test
     void complete() {
         messageBus.register(a);
@@ -45,6 +47,7 @@ class MessageBusImplTest {
         messageBus.unregister(a);
     }
 
+    // Changes: added unregister
     @Test
     void sendBroadcast() {
         //create and register 2 Microservices
