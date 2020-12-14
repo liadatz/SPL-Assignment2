@@ -1,6 +1,5 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.application.messages.DummyBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.passiveObjects.Input;
@@ -12,8 +11,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -28,7 +25,7 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         // Read from JSON file and import to java Object
         Gson gson = new Gson();
-        Reader reader = new FileReader("/Users/omer/Desktop/SPL-Assignment2/input.json"); //(change before submission)
+        Reader reader = new FileReader(args[0]); //(change before submission)
         Input input = gson.fromJson(reader, Input.class);
 
         // Initiate PassiveObjects
@@ -64,7 +61,7 @@ public class Main {
         LeiaThread.join();
 
         // Diary to JSON File
-        FileWriter writer = new FileWriter("/Users/omer/Desktop/SPL-Assignment2/output.json"); //(change before submission)
+        FileWriter writer = new FileWriter(args[1]); //(change before submission)
         gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(diary, writer);
         writer.flush();

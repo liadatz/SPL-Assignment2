@@ -12,7 +12,6 @@ class MessageBusImplTest {
     private MessageBusImpl messageBus;
     private DummyMicroService a = new DummyMicroService("a");
     private DummyEvent dummyEvent = new DummyEvent("em");
-    ;
 
 
     @BeforeEach

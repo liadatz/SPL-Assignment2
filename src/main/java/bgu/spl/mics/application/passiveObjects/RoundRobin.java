@@ -34,7 +34,7 @@ public class RoundRobin {
             list.remove(m);
         }
     }
-    public void updateIndex(){ //moves index forworad unless it's on the last element. if so, index is reset to zero.
+    public void updateIndex(){ //moves index forward unless it's on the last element. if so, index is reset to zero.
         if (index.get() < list.size()-1)
             index.getAndIncrement();
         else

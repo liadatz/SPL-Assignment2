@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Passive data-object representing a forest creature summoned when HanSolo and C3PO receive AttackEvents.
  * You must not alter any of the given public methods of this class.
@@ -24,7 +22,7 @@ public class Ewok {
 //------------------------------------methods---------------------------------------------
     /**
      * Acquires an Ewok
-     * locks every single Ewok when trying to aquire
+     * locks every single Ewok when trying to acquire
      */
     public synchronized void acquire() {
         while (!available)
