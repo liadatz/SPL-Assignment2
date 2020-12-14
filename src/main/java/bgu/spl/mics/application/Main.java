@@ -28,7 +28,7 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         // Read from JSON file and import to java Object
         Gson gson = new Gson();
-        Reader reader = new FileReader("/Users/omer/Desktop/SPL-Assignment2/input.json");
+        Reader reader = new FileReader("/Users/omer/Desktop/SPL-Assignment2/input.json"); //(change before submission)
         Input input = gson.fromJson(reader, Input.class);
 
         // Initiate PassiveObjects
@@ -49,26 +49,26 @@ public class Main {
         Thread R2D2Thread = new Thread(R2D2);
         Thread LandoThread = new Thread(Lando);
 
-               // Threads Start
-            HanSoloThread.start();
-            C3POThread.start();
-            LeiaThread.start();
-            R2D2Thread.start();
-            LandoThread.start();
+         // Threads Start
+         HanSoloThread.start();
+         C3POThread.start();
+         LeiaThread.start();
+         R2D2Thread.start();
+         LandoThread.start();
 
-            // Threads Join
-            HanSoloThread.join();
-            C3POThread.join();
-            R2D2Thread.join();
-            LandoThread.join();
-            LeiaThread.join();
+         // Threads Join
+        HanSoloThread.join();
+        C3POThread.join();
+        R2D2Thread.join();
+        LandoThread.join();
+        LeiaThread.join();
 
-            // Diary to JSON File
-            FileWriter writer = new FileWriter("/Users/omer/Desktop/SPL-Assignment2/output.json");
-            gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(diary, writer);
-            writer.flush();
-            writer.close();
-        }
+        // Diary to JSON File
+        FileWriter writer = new FileWriter("/Users/omer/Desktop/SPL-Assignment2/output.json"); //(change before submission)
+        gson = new GsonBuilder().setPrettyPrinting().create();
+        gson.toJson(diary, writer);
+        writer.flush();
+        writer.close();
+    }
 
 }

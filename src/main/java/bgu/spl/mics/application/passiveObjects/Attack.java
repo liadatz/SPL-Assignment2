@@ -18,7 +18,7 @@ public class Attack {
      * Constructor.
      */
     public Attack(List<Integer> serialNumbers, int duration) {
-        Collections.sort(serialNumbers);
+        Collections.sort(serialNumbers); //sorting Ewoks serial number in order to prevent possible dead- blocks
         this.serials = serialNumbers;
         this.duration = duration;
     }
@@ -29,9 +29,4 @@ public class Attack {
     public int getDuration() {
         return duration;
     }
-
-
-
-
-
 }

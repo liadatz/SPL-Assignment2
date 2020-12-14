@@ -30,7 +30,7 @@ public class Future<T> {
      *
      * @return return the result of type T if it is available, if not wait until it is available.
      */
-    public synchronized T get() {
+    public synchronized T get() { //using monitor that locks a specific Future every time
         while (!isDone()) {
             try {
                 wait();
@@ -43,7 +43,7 @@ public class Future<T> {
     /**
      * Resolves the result of this Future object.
      */
-    public synchronized void resolve(T result) {
+    public synchronized void resolve(T result) { //using monitor that locks a specific Future every time
         this.result = result;
         isDone = true;
         notifyAll();
@@ -68,7 +68,7 @@ public class Future<T> {
      * wait for {@code timeout} TimeUnits {@code unit}. If time has
      * elapsed, return null.
      */
-    public synchronized T get(long timeout, TimeUnit unit) {
+    public synchronized T get(long timeout, TimeUnit unit) { //using monitor that locks a specific Future every time
         while (!isDone()) {
             try {
                 unit.sleep(timeout);

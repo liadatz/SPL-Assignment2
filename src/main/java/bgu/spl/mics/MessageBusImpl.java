@@ -81,13 +81,12 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		synchronized (eventSubscribers.get(e.getClass())) {
+		synchronized (eventSubscribers) {
 			if (eventSubscribers.containsKey(e.getClass()) && !eventSubscribers.get(e.getClass()).isEmpty()) {
 				Future<T> future = new Future<>();
 					eventFutures.put(e, future);
 				MicroService first = eventSubscribers.get(e.getClass()).pop();
 				MicroservicesQueues.get(first).offer(e);
-//				System.out.println(e.hashCode() + " " + eventFutures.containsKey(e) + " in sendEvent");
 				return future;
 			}
 		}
@@ -96,13 +95,13 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
-		//System.out.println(m.getName() + " is registering"); // log
+		//System.out.println(m.getName() + " is registering"); // (delete before submission)
 		MicroservicesQueues.putIfAbsent(m, new LinkedBlockingQueue<>());
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-		//System.out.println(m.getName() + " is unregistering"); // log
+		System.out.println(m.getName() + " is unregistering"); // (delete before submission)
 			// Remove 'm' from all RoundRobins
 			synchronized (eventSubscribers) {
 				for (RoundRobin currentRoundRobin : eventSubscribers.values()) {
@@ -122,7 +121,6 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 			if (MicroservicesQueues.containsKey(m)) {
-//				System.out.println("num of messages for "+m.getName()+": "+MicroservicesQueues.get(m).size());
 				return MicroservicesQueues.get(m).take(); //take is blocking method
 			}
 			return null;

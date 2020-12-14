@@ -11,6 +11,10 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+/**
+ * abstract class for Microservices that function as attackers. in out implementation: HanSolo, C3PO
+ */
+
 public abstract class AttackersMicroservice extends MicroService {
     //------------------------------------fields----------------------------------------------
     private Diary diary;
@@ -24,7 +28,7 @@ public abstract class AttackersMicroservice extends MicroService {
     //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
-        System.out.println(this.getName() + " is initializing"); // log
+        System.out.println(this.getName() + " is initializing"); // (delete before submission)
         // Attacks
         Callback<AttackEvent> attackCallback = (AttackEvent e) -> {
             System.out.println(this.getName() + " is handling attack"); // log
@@ -37,17 +41,14 @@ public abstract class AttackersMicroservice extends MicroService {
             ewoks.releaseEwoks(e.getEwoksSerials());
             complete(e, true);
             diary.increaseTotalAttacks();
-            System.out.println(this.getName() + " is finish handling attack"); // log
+            System.out.println(this.getName() + " is finish handling attack"); // (delete before submission)
         };
         subscribeEvent(AttackEvent.class, attackCallback);
-//        diary.increaseNumOfAttackers();
-//        notifyAll();
         Main.waitForAttackers.countDown();
 
         // FinishAttacks
-        subscribeBroadcast(FinishAttacksBroadcast.class, callback -> {
-            diary.setFinishTime(this, System.currentTimeMillis());
-        });
+        //FinishAttacksBroadcast will be the first message in the queue when all attacks are finished
+        subscribeBroadcast(FinishAttacksBroadcast.class, callback -> diary.setFinishTime(this, System.currentTimeMillis()));
         Main.waitForAttackers.countDown();
 
         // TerminateBroadcast

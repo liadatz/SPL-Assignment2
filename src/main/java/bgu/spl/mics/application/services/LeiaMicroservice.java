@@ -34,23 +34,23 @@ public class LeiaMicroservice extends MicroService {
 //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
-        System.out.println(this.getName() + " is initializing"); // log
+        System.out.println(this.getName() + " is initializing"); // (delete before submission)
         boolean isReady = false;
-        // Wait until attackers are ready
+        // Wait until attackers are ready (registered and subscribed)
         while (!isReady) {
             try {
                 Main.waitForAttackers.await();
                 isReady = true;
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                System.out.println("Leia failed waiting for other attackers"); // log
+                System.out.println("Leia failed waiting for other attackers"); // (delete before submission)
             }
         }
         // Attack phase
-        System.out.println("Leia start sending attacks"); // log
+        System.out.println("Leia start sending attacks"); // (delete before submission)
         for (Attack attack : attacks) {
             AttackEvent newAttack = new AttackEvent(attack.getSerials(), attack.getDuration());
-            futuresTable.put(newAttack, sendEvent(newAttack)); //keeps all futures. is using concurrentHashMap is enough? few threads have access to futures.
+            futuresTable.put(newAttack, sendEvent(newAttack)); //restore all futures
         }
 
         // Tell HanSolo and C3PO that there no more attacks
@@ -58,23 +58,25 @@ public class LeiaMicroservice extends MicroService {
         sendBroadcast(finishAttacksBroadcast);
 
         //'Wait for attack to finish' phase
-        System.out.println("Leia waits until all attacks are done"); // log
-        for (Event key: futuresTable.keySet()) {
-                futuresTable.get(key).get(); //blocking if future is not resolved. is it enough? do we need to check if return value is indeed true? because in our program it will never be false
+        System.out.println("Leia waits until all attacks are done"); // (delete before submission)
+        for (Event key: futuresTable.keySet()) { //going through all Futures which where restores, and waiting for all to be resolved
+                futuresTable.get(key).get(); //blocking if future is not resolve
         }
-        System.out.println("Leia's attacks futures are all done"); // log
+        System.out.println("Leia's attacks futures are all done"); // (delete before submission)
 
-        //reach this point only after all futrues 'get()' method succeed
+        //reach this point only after all Futures' 'get()' method succeed
+        //sending Deactivation Event to R2D2
         DeactivationEvent deactivationEvent = new DeactivationEvent();
         deactivationFuture = sendEvent(deactivationEvent);
-        System.out.println("Leia waits until deactivation done"); // log
-        deactivationFuture.get(); //block and wait until deactivation future is resolved
-        System.out.println("Leia deactivation future is done"); // log
+        System.out.println("Leia waits until deactivation done"); // (delete before submission)
+        deactivationFuture.get(); //block and wait until deactivation Future is resolved
+        System.out.println("Leia deactivation future is done"); // (delete before submission)
 
+        //sending Bomb Destroy Event to Lando
         BombDestroyerEvent bombEvent = new BombDestroyerEvent();
         sendEvent(bombEvent); // notify Lando that shield deactivation is done
-        //is needed to get answer from lando?
-        // TerminateBroadcast
+
+        // subscribe to TerminateBroadcast
         subscribeBroadcast(TerminateBroadcast.class, callback->{
             terminate();
             diary.setTerminateTime(this, System.currentTimeMillis());

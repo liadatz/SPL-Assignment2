@@ -70,14 +70,14 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
+        System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // (delete before submission)
         if (type != null & callback != null) {
             messageBus.subscribeEvent(type, this);
             if (!callBacks.contains(type)) {
                 callBacks.put(type, callback);
             }
         }
-        //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
+        System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // (delete before submission)
     }
 
     /**
@@ -102,14 +102,14 @@ public abstract class MicroService implements Runnable {
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        //System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // log
+        System.out.println(this.getName() + " subscribing to " + type.getSimpleName()); // (delete before submission)
         if (type != null & callback != null) {
             messageBus.subscribeBroadcast(type, this);
             if (!callBacks.contains(type)) {
                 callBacks.put(type, callback);
             }
         }
-        //System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // log
+        System.out.println(this.getName() + " finish subscribing to " + type.getSimpleName()); // (delete before submission)
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class MicroService implements Runnable {
      * null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        //System.out.println(this.getName() + " is sending Event - " + e.getClass()); //log
+        System.out.println(this.getName() + " is sending Event - " + e.getClass()); //(delete before submission)
         if (e != null)
             return messageBus.sendEvent(e);
         else return null;
@@ -140,7 +140,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        //System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //log
+        System.out.println(this.getName() + " is sending Broadcast - " + b.getClass()); //(delete before submission)
         if (b != null)
             messageBus.sendBroadcast(b);
     }
@@ -159,7 +159,7 @@ public abstract class MicroService implements Runnable {
     protected final <T> void complete(Event<T> e, T result) {
         if (e != null & result != null)
             messageBus.complete(e, result);
-        //System.out.println(e.getClass() + " is completed with result " + result + " by " + this.getName()); // log
+        //System.out.println(e.getClass() + " is completed with result " + result + " by " + this.getName()); // (delete before submission)
     }
 
     /**
@@ -186,9 +186,9 @@ public abstract class MicroService implements Runnable {
         initialize();
         while (!terminated) {
             try {
-                //System.out.println(this.getName() + " waiting for a message"); // log
+                System.out.println(this.getName() + " waiting for a message"); // (delete before submission)
                 Message m = messageBus.awaitMessage(this);
-                //System.out.println(this.getName() + " received a message"); // log
+                System.out.println(this.getName() + " received a message"); // (delete before submission)
                 if (callBacks.containsKey(m.getClass())) callBacks.get(m.getClass()).call(m);
             } catch (InterruptedException e) {
                 terminate();

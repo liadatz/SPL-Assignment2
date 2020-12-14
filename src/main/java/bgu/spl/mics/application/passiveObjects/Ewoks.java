@@ -14,19 +14,19 @@ public class Ewoks {
     private Ewok[] ewoks;
     private static class SingletonHolder {
         private static Ewoks instance = null;
-        private SingletonHolder(int numOfEwoks) {
+        private SingletonHolder(int numOfEwoks) { //single instance makes Ewoks class a singleton
             instance = new Ewoks(numOfEwoks);
         }
     }
 //---------------------------------constructors-------------------------------------------
-    private Ewoks(int numOfEwoks) {
+    private Ewoks(int numOfEwoks) { //no public access, will be construct only once
         ewoks = new Ewok[numOfEwoks];
-        for (int i = 0; i < numOfEwoks; i++) {
+        for (int i = 0; i < numOfEwoks; i++) { //initialize list of ewoks with the size of 'numOfEwoks'
             ewoks[i] = new Ewok(i + 1);
         }
     }
 //------------------------------------getters---------------------------------------------
-    public static Ewoks getInstance(int numOfEwoks) {
+    public static Ewoks getInstance(int numOfEwoks) { //public access, used as constructor and after construct will return instance
         SingletonHolder sh = new SingletonHolder(numOfEwoks);
         return SingletonHolder.instance;
     }
@@ -34,23 +34,14 @@ public class Ewoks {
         return SingletonHolder.instance;
     }
 //-----------------------------------methods---------------------------------------------
-    public void acquireEwoks(List<Integer> serials) { // check for other ways to prevent starvation
+    public void acquireEwoks(List<Integer> serials) {
         for (Integer serial : serials) {
- //               if (!ewoks[serial - 1].getAvailable()) {
-//                    try {
-//                        wait();
-//                    } catch (InterruptedException e) {
-//                        System.out.println("Failed acquiring Ewoks"); // log
-//                        e.printStackTrace();
-//                    }
-
                 ewoks[serial - 1].acquire();
             }
     }
     public void releaseEwoks(List<Integer> serials) {
         for (Integer serial : serials) {
                 ewoks[serial - 1].release();
-                //notifyAll();
             }
         }
 }

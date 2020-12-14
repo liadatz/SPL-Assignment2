@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.passiveObjects;
-
 import bgu.spl.mics.MicroService;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,7 +21,7 @@ public class RoundRobin {
         updateIndex();
         return output;
     }
-    public void remove(MicroService m){
+    public void remove(MicroService m){ //removes an element from the queue and updating index
         int mLocation = list.indexOf(m);
         if (mLocation != -1) {
             if (mLocation < index.get()) {
@@ -36,7 +34,7 @@ public class RoundRobin {
             list.remove(m);
         }
     }
-    public void updateIndex(){
+    public void updateIndex(){ //moves index forworad unless it's on the last element. if so, index is reset to zero.
         if (index.get() < list.size()-1)
             index.getAndIncrement();
         else

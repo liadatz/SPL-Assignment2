@@ -24,7 +24,7 @@ public class LandoMicroservice  extends MicroService {
 //------------------------------------methods---------------------------------------------
     @Override
     protected void initialize() {
-        System.out.println(this.getName() + " is initializing"); // log
+        System.out.println(this.getName() + " is initializing"); // (delete before submission)
         // TerminateBroadcast
         subscribeBroadcast(TerminateBroadcast.class, callback->{
             terminate();
@@ -33,7 +33,7 @@ public class LandoMicroservice  extends MicroService {
 
         // BombDestroyerEvent
         Callback<BombDestroyerEvent> DeCallback = (BombDestroyerEvent e)->{
-            System.out.println(this.getName() + " is handling BombDestroyerEvent"); // log
+            System.out.println(this.getName() + " is handling BombDestroyerEvent"); // (delete before submission)
             try {
                 MILLISECONDS.sleep(duration);
             }
@@ -41,11 +41,10 @@ public class LandoMicroservice  extends MicroService {
                 eX.printStackTrace();
             }
             TerminateBroadcast terminate = new TerminateBroadcast();
-            System.out.println("enter");
             sendBroadcast(terminate); //notify all microservices that the attack was done
-            System.out.println("finish");
-            System.out.println(this.getName() + " is finish handling BombDestroyerEvent and sent TerminateBroadcast"); // log
+            System.out.println(this.getName() + " is finish handling BombDestroyerEvent and sent TerminateBroadcast"); // (delete before submission)
         };
         subscribeEvent(BombDestroyerEvent.class, DeCallback);
+
     }
 }

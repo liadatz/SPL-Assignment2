@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
-
+    //for Ron tests (delete before submission)
     public AtomicInteger getNumberOfAttacks() {
         return totalAttacks;
     }
@@ -46,12 +46,12 @@ public class Diary {
     public void resetNumberAttacks() {
         totalAttacks.set(0);
     }
+    //(delete before submission)- until here
 
     //--------------------------fields--------------------------------------
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
-//    private AtomicInteger numOfAttackers;
     private AtomicInteger totalAttacks;
     private long HanSoloFinish = 0;
     private long C3POFinish = 0;
@@ -63,20 +63,13 @@ public class Diary {
     private long LandoTerminate = 0;
 //------------------------constructor------------------------------------
     private Diary() {
-//        numOfAttackers = new AtomicInteger(0);
         totalAttacks = new AtomicInteger(0);
     }
 //--------------------------getters--------------------------------------
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
-//    public AtomicInteger getNumOfAttackers() {
-//        return numOfAttackers;
-//    }
-//--------------------------setter--------------------------------------
-//    public void increaseNumOfAttackers() {
-//        numOfAttackers.incrementAndGet();
-//    }
+//--------------------------setters--------------------------------------
     public void increaseTotalAttacks() {
         totalAttacks.incrementAndGet();
     }

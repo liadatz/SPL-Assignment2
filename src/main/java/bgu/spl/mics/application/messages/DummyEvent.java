@@ -3,6 +3,7 @@ package bgu.spl.mics.application.messages;
 import bgu.spl.mics.Event;
 
 public class DummyEvent implements Event<Boolean> {
+    //Dummy class used for testing
 //------------------------------------fields----------------------------------------------
     String message;
 //----------------------------------constructors------------------------------------------

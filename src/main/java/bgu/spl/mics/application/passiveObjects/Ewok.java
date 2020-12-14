@@ -24,18 +24,20 @@ public class Ewok {
 //------------------------------------methods---------------------------------------------
     /**
      * Acquires an Ewok
+     * locks every single Ewok when trying to aquire
      */
     public synchronized void acquire() {
         while (!available)
             try{wait();}
         catch(InterruptedException e){
-                System.out.println("Failed acquiring Ewoks"); // log
+                System.out.println("Failed acquiring Ewoks"); // log (delete before submission)
                 e.printStackTrace();
             }
         available = false;
     }
     /**
      * release an Ewok
+     * locks every single Ewok when trying to release, if released notify all and allows other to try and acquire
      */
     public synchronized void release() {
         available = true;
