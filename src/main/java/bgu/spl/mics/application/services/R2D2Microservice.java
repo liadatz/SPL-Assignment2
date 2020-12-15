@@ -13,18 +13,27 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  *
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
+ * this class extend the abstract class {@link MicroService}
  */
 public class R2D2Microservice extends MicroService {
 //------------------------------------fields----------------------------------------------
     private long duration;
     private Diary diary;
 //----------------------------------constructors------------------------------------------
+
+    /**
+     * construct a new R2D2 Microservice
+     * @param duration is the time required to activate the shield
+     */
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration = duration;
         diary = Diary.getInstance();
     }
 //------------------------------------methods---------------------------------------------
+    /**
+     * subscribes to all relevent events and broadcast, and define their callbacks aswell.
+     */
     @Override
     protected void initialize() {
         System.out.println(this.getName() + " is initializing"); // (delete before submission)

@@ -17,15 +17,25 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public abstract class AttackersMicroservice extends MicroService {
     //------------------------------------fields----------------------------------------------
+
     private Diary diary;
     private Ewoks ewoks;
     //----------------------------------constructors------------------------------------------
+
+    /**
+     * construct new AttackerMicroservice
+     * @param name is the name of the microservice
+     */
     public AttackersMicroservice(String name) {
         super(name);
         diary = Diary.getInstance();
         ewoks = Ewoks.getInstance();
     }
     //------------------------------------methods---------------------------------------------
+
+    /**
+     * subscribes to all relevent events and broadcast, and define their callbacks aswell.
+     */
     @Override
     protected void initialize() {
         System.out.println(this.getName() + " is initializing"); // (delete before submission)

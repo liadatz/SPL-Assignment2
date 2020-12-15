@@ -10,18 +10,28 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * LandoMicroservice
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
+ * his class extends the abstract class {@link MicroService}
  */
 public class LandoMicroservice  extends MicroService {
 //------------------------------------fields----------------------------------------------
     private long duration;
     Diary diary;
 //----------------------------------constructors------------------------------------------
+
+    /**
+     * Construct a new lando microservice
+     * @param duration is the time required to this lando microservice to activate the bomb
+     */
     public LandoMicroservice(long duration) {
         super("Lando");
         this.duration = duration;
         diary = Diary.getInstance();
     }
 //------------------------------------methods---------------------------------------------
+
+    /**
+     * subscribes to all relevent events and broadcast, and define their callbacks aswell.
+     */
     @Override
     protected void initialize() {
         System.out.println(this.getName() + " is initializing"); // (delete before submission)

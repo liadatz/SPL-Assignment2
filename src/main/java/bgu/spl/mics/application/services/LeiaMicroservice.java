@@ -16,6 +16,7 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  *
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
+ * this class extend the abstract class {@link MicroService}
  */
 public class LeiaMicroservice extends MicroService {
 //------------------------------------fields----------------------------------------------
@@ -24,6 +25,11 @@ public class LeiaMicroservice extends MicroService {
 	private ConcurrentHashMap<Event, Future> futuresTable;
 	private Future deactivationFuture;
 //----------------------------------constructors------------------------------------------
+
+    /**
+     * constuct a new Leia Microservice
+     * @param attacks is an array of all the attacks need to be created for the battle
+     */
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
 		this.attacks = attacks;
@@ -32,6 +38,10 @@ public class LeiaMicroservice extends MicroService {
 		deactivationFuture = new Future();
     }
 //------------------------------------methods---------------------------------------------
+    /**
+     * subscribes to all relevent events and broadcast, and define their callbacks aswell.
+     * also creates all attacks and sends them to the Attackers Microservices
+     */
     @Override
     protected void initialize() {
         System.out.println(this.getName() + " is initializing"); // (delete before submission)

@@ -47,7 +47,7 @@ public class FutureTest {
     public void testGetWithTimeOut() throws InterruptedException
     {
         assertFalse(future.isDone());
-        assertNull(future.get(100,TimeUnit.MILLISECONDS)); //result should be null if not done
+        assertNull(future.get(3,TimeUnit.MILLISECONDS)); //result should be null if not done
         future.resolve("expectedAnswer");
         assertEquals(future.get(100,TimeUnit.MILLISECONDS),"expectedAnswer"); // after resolved, result should be "expectedAnswer"
     }

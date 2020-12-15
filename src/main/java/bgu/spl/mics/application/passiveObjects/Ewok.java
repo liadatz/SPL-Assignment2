@@ -11,11 +11,20 @@ public class Ewok {
     int serialNumber;
     boolean available;
 //----------------------------------constructors------------------------------------------
+    /**
+     *  @param serialNumber is the ID of the ewok - initialized to field serials
+     * available is intialized to be true at first
+     */
     public Ewok(int serialNumber) {
         this.serialNumber = serialNumber;
         available = true;
     }
 //------------------------------------getters---------------------------------------------
+
+    /**
+     *
+     * @return true if available and false otherwise
+     */
     public boolean getAvailable() {
         return available;
     }

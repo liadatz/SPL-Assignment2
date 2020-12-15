@@ -9,48 +9,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Do not add to this class nothing but a single constructor, getters and setters.
  */
 public class Diary {
-    //for Ron tests (delete before submission)
-    public AtomicInteger getNumberOfAttacks() {
-        return totalAttacks;
-    }
-
-    public long getC3POFinish() {
-        return C3POFinish;
-    }
-
-    public long getR2D2Deactivate() {
-        return R2D2Deactivate;
-    }
-
-    public long getHanSoloFinish() {
-        return HanSoloFinish;
-    }
-
-    public long getHanSoloTerminate() {
-        return HanSoloTerminate;
-    }
-
-    public long getC3POTerminate() {
-        return C3P0Terminate;
-    }
-
-    public long getLandoTerminate() {
-        return LandoTerminate;
-    }
-
-    public long getR2D2Terminate() {
-        return R2D2Terminate;
-    }
-
-    public void resetNumberAttacks() {
-        totalAttacks.set(0);
-    }
-    //(delete before submission)- until here
 
     //--------------------------fields--------------------------------------
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
+    /**
+     * @param totalAttacks is the number of attacks completed so far
+     * @param HanSoloFinish is Microservise Han Solo's Finish attacks time
+     * @param C3POFinish is Microservise C3PO's Finish attacks time
+     * @param R2D2Deactivate is the Microservise R2D2 time of deactivating the shield
+     * all terminate fields stand for one of the active Microservices termination time
+     */
     private AtomicInteger totalAttacks;
     private long HanSoloFinish = 0;
     private long C3POFinish = 0;
@@ -60,18 +30,36 @@ public class Diary {
     private long LeiaTerminate = 0;
     private long R2D2Terminate = 0;
     private long LandoTerminate = 0;
-//------------------------constructor------------------------------------
+
+    //------------------------constructor------------------------------------
+    /**
+     * being called only once. makes Diary class a thread-safe singleton
+     */
     private Diary() {
         totalAttacks = new AtomicInteger(0);
     }
 //--------------------------getters--------------------------------------
+
+    /**
+     * @return SingletonHolder.instance- Diary is a singleton
+     */
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
 //--------------------------setters--------------------------------------
+
+    /**
+     * increases number of total attacks by one
+     * uses thread- safe atomic function incrementAndGet
+     */
     public void increaseTotalAttacks() {
         totalAttacks.incrementAndGet();
     }
+    /**
+     * sets the terminate time of specific Microservice
+     * @param m is the specific microservice
+     * @param time is the termination time of this microservice
+     */
     public void setTerminateTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
@@ -87,6 +75,11 @@ public class Diary {
                 LandoTerminate = time;
         }
     }
+    /**
+     * sets the finish time of specific Microservice attacker
+     * @param m is the specific microservice attacker
+     * @param time is the time this microservice finished all his attacks
+     */
     public void setFinishTime(MicroService m, long time) {
         String name = m.getName();
         switch (name) {
@@ -96,6 +89,10 @@ public class Diary {
                 C3POFinish = time;
         }
     }
+    /**
+     * sets the deactivation time
+     * @param time is the deactivation time
+     */
     public void setDeactivateTime(long time) {
         R2D2Deactivate = time;
     }

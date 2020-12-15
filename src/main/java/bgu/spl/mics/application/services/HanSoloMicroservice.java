@@ -8,6 +8,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
  * <p>
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
+ * this class extends the abstract class {@link AttackersMicroservice}
  */
 public class HanSoloMicroservice extends AttackersMicroservice {
 //----------------------------------constructors------------------------------------------

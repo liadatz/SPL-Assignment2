@@ -15,7 +15,9 @@ public class Attack {
     final int duration;
 //----------------------------------constructors------------------------------------------
     /**
-     * Constructor.
+     *   @param serialNumbers is a list of ID's of the ewoks required for this attack - initialized to field serials
+     *   @param duration is the time takes to complete this attack - initialized to field duration
+     *
      */
     public Attack(List<Integer> serialNumbers, int duration) {
         Collections.sort(serialNumbers); //sorting Ewoks serial number in order to prevent possible dead- blocks
@@ -23,9 +25,15 @@ public class Attack {
         this.duration = duration;
     }
 //------------------------------------getters---------------------------------------------
+    /**
+     * @return list of ID's of the ewoks required for the attack
+     */
     public List<Integer> getSerials() {
         return serials;
     }
+    /**
+     * @return time that required for the attack
+     */
     public int getDuration() {
         return duration;
     }

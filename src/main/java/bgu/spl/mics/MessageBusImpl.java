@@ -13,9 +13,17 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
 //------------------------------------fields----------------------------------------------
+
+
 	private static class SingletonHolder {
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
+	/**
+	 * @param MicroservisesQueues contains the message {@link BlockingQueue} of all the registered {@link MicroService}
+	 * @param eventSubscribers contains {@link Event} and the matching {@link RoundRobin} of the {@link MicroService} subscribed to it
+	 * @param broadcastSubscribers contains {@link Broadcast} and the matching {@link ArrayList} of {@link MicroService} subscribed to it
+	 * @param eventFuture contains all event which were sent and their matching {@link Future}
+	 */
 	private ConcurrentHashMap<MicroService, BlockingQueue<Message>> MicroservicesQueues;
 	private final ConcurrentHashMap<Class<? extends Event<?>>, RoundRobin> eventSubscribers;
 	private final ConcurrentHashMap<Class<? extends Broadcast>, ArrayList<MicroService>> broadcastSubscribers;
@@ -28,10 +36,22 @@ public class MessageBusImpl implements MessageBus {
 		eventFutures = new ConcurrentHashMap<>();
 	}
 //----------------------------------getters-----------------------------------------------
+
+	/**
+	 * get instace of singleton thread safe message bus
+	 * @return the single instace of the message bus
+	 */
 	public static MessageBusImpl getInstance(){
 		return SingletonHolder.instance;
 	}
 //-----------------------------------methods----------------------------------------------
+
+	/**
+	 *
+	 * @param type The type to subscribe to,
+	 * @param m    The subscribing micro-service.
+	 * @param <T> The type of the result expected by the completed event.
+	 */
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m){
 			synchronized (eventSubscribers) {
@@ -47,6 +67,11 @@ public class MessageBusImpl implements MessageBus {
 			}
 	}
 
+	/**
+	 *
+	 * @param type 	The type to subscribe to.
+	 * @param m    	The subscribing micro-service.
+	 */
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		synchronized (broadcastSubscribers) {
@@ -62,6 +87,12 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 *
+	 * @param e      The completed event.
+	 * @param result The resolved result of the completed event.
+	 * @param <T> The type of the result expected by the completed event.
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
@@ -70,6 +101,10 @@ public class MessageBusImpl implements MessageBus {
 			}
 	}
 
+	/**
+	 *
+	 * @param b 	The message to added to the queues.
+	 */
 	@Override
 	public void sendBroadcast(Broadcast b) {
 		synchronized (broadcastSubscribers) {
@@ -84,6 +119,12 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 *
+	 * @param e     	The event to add to the queue.
+	 * @param <T> The type of the result expected by the completed event.
+	 * @return the {@link Future} matching for this {@link Event}. the future will be resolved when the event is done
+	 */
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		synchronized (eventSubscribers) {
@@ -101,6 +142,10 @@ public class MessageBusImpl implements MessageBus {
 		return null;
 	}
 
+	/**
+	 * creates new {@link Message} {@link BlockingQueue} for m
+	 * @param m the micro-service to create a queue for.
+	 */
 	@Override
 	public void register(MicroService m) {
 		//System.out.println(m.getName() + " is registering"); // (delete before submission)
@@ -108,6 +153,10 @@ public class MessageBusImpl implements MessageBus {
 		MicroservicesQueues.putIfAbsent(m, new LinkedBlockingQueue<>());
 	}
 
+	/**
+	 * deletes m from all the related queues and maps
+	 * @param m the micro-service to unregister.
+	 */
 	@Override
 	public void unregister(MicroService m) {
 		System.out.println(m.getName() + " is unregistering"); // (delete before submission)
@@ -127,6 +176,13 @@ public class MessageBusImpl implements MessageBus {
 			MicroservicesQueues.remove(m);
 	}
 
+	/**
+	 *
+	 * @param m The micro-service requesting to take a message from its message
+	 *          queue.
+	 * @return the next {@link Message} in m's {@link Message} {@link BlockingQueue}
+	 * @throws InterruptedException
+	 */
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		// Check if 'm' is registered, if so take a Message from his Messages Queue
